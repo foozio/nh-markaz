@@ -8,8 +8,8 @@ import { SurahView } from './surah-view';
 import { RightSidebar } from './right-sidebar';
 import { QuranHeader } from '@/components/layout/quran-header';
 import { useAuth } from '@/hooks/use-auth';
-import { loadNotes, saveNotes } from '@/lib/firestore';
 import { useToast } from '@/hooks/use-toast';
+import { loadUserNotes, saveUserNotes } from '@/app/actions';
 
 export function QuranBrowser() {
   const { user } = useAuth();
@@ -47,12 +47,15 @@ export function QuranBrowser() {
 
       // Fetch notes
       try {
-        const { notes: loadedNotes, error } = await loadNotes(user.uid);
+        const { notes: loadedNotes, error } = await loadUserNotes();
         if (error) {
           toast({ variant: 'destructive', title: 'Error', description: 'Gagal memuat catatan.' });
         } else if (loadedNotes) {
           setNotes(loadedNotes);
         }
+      } catch (error) {
+        console.error('Gagal memuat catatan:', error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Gagal memuat catatan.' });
       } finally {
         setIsLoadingNotes(false);
       }
@@ -131,20 +134,30 @@ export function QuranBrowser() {
   const handleSaveNotes = async () => {
     if (!user) return;
     setIsSavingNotes(true);
-    const { success, error } = await saveNotes(user.uid, notes);
-    if (success) {
-      toast({
-        title: 'Catatan Disimpan',
-        description: 'Catatan Anda telah berhasil disimpan.',
-      });
-    } else {
+    try {
+      const { success, error } = await saveUserNotes(notes);
+      if (success) {
+        toast({
+          title: 'Catatan Disimpan',
+          description: 'Catatan Anda telah berhasil disimpan.',
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Gagal Menyimpan',
+          description: error,
+        });
+      }
+    } catch (error) {
+      console.error('Gagal menyimpan catatan:', error);
       toast({
         variant: 'destructive',
         title: 'Gagal Menyimpan',
-        description: error,
+        description: 'Tidak dapat memverifikasi sesi Anda. Silakan masuk kembali.',
       });
+    } finally {
+      setIsSavingNotes(false);
     }
-    setIsSavingNotes(false);
   };
 
 

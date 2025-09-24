@@ -10,9 +10,7 @@ import {
 } from '@/components/ui/select';
 import type { SurahSummary } from '@/lib/quran-data';
 import { useAuth } from '@/hooks/use-auth';
-import { auth } from '@/lib/firebase';
-import { signOut } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import {
     DropdownMenu,
@@ -22,7 +20,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
-import { LogOut, User } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export function Header({
@@ -37,12 +35,10 @@ export function Header({
   isLoading: boolean;
 }) {
   const { user } = useAuth();
-  const router = useRouter();
   const { toast } = useToast();
 
   const handleSignOut = async () => {
-    await signOut(auth);
-    router.push('/login');
+    await signOut({ callbackUrl: '/login' });
     toast({
         title: "Logout Berhasil",
         description: "Anda telah berhasil keluar.",
@@ -91,8 +87,8 @@ export function Header({
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Avatar className='cursor-pointer h-9 w-9'>
-                    <AvatarImage src={user?.photoURL || ''} alt={user?.displayName || 'User'}/>
-                    <AvatarFallback>{getInitials(user?.displayName)}</AvatarFallback>
+                    <AvatarImage src={user?.image || ''} alt={user?.name || 'User'}/>
+                    <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
                 </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end' className='w-56'>

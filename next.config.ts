@@ -1,4 +1,8 @@
 import type {NextConfig} from 'next';
+import {config as loadEnv} from 'dotenv';
+import path from 'node:path';
+
+loadEnv({path: path.resolve(__dirname, '.env')});
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -8,6 +12,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  outputFileTracingRoot: path.resolve(__dirname),
   images: {
     remotePatterns: [
       {

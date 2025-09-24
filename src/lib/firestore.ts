@@ -54,7 +54,7 @@ function get<T = unknown>(sql: string, params: unknown[] = []) {
   });
 }
 
-export async function saveNotes(userId: string, notes: string) {
+async function saveNotes(userId: string, notes: string) {
   try {
     await run(
       `INSERT INTO userNotes (userId, notes, updatedAt)
@@ -72,7 +72,7 @@ export async function saveNotes(userId: string, notes: string) {
   }
 }
 
-export async function loadNotes(userId: string): Promise<{ notes?: string; error?: string }> {
+async function loadNotes(userId: string): Promise<{ notes?: string; error?: string }> {
   try {
     const row = await get<{ notes: string }>(
       'SELECT notes FROM userNotes WHERE userId = ?',
@@ -89,4 +89,12 @@ export async function loadNotes(userId: string): Promise<{ notes?: string; error
     const errorMessage = error instanceof Error ? error.message : 'Terjadi kesalahan yang tidak diketahui.';
     return { error: errorMessage };
   }
+}
+
+export async function writeNotesForUser(userId: string, notes: string) {
+  return saveNotes(userId, notes);
+}
+
+export async function readNotesForUser(userId: string) {
+  return loadNotes(userId);
 }
