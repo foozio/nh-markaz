@@ -2,11 +2,11 @@
 'use client';
 
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarHeader
-} from '@/components/ui/sidebar';
-import { Card, CardContent } from '@/components/ui/card';
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle
+} from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import type { Surah } from '@/lib/quran-data';
   
@@ -16,26 +16,24 @@ import type { Surah } from '@/lib/quran-data';
   
   export function RightSidebar({ surah }: RightSidebarProps) {
     return (
-      <Sidebar side="right" collapsible="offcanvas" className="border-l p-0 w-[350px]">
-        <SidebarHeader>
-          <h2 className="font-headline text-xl font-semibold">My Notes</h2>
-        </SidebarHeader>
-        <SidebarContent className="p-2">
-          {surah ? (
-            <Card className="shadow-none border-0">
-              <CardContent className="p-0">
+      <aside className="w-[350px] border-l bg-background p-4 flex flex-col">
+        <Card className="flex-1 flex flex-col shadow-none border-0">
+          <CardHeader>
+            <CardTitle className="font-headline text-xl font-semibold">My Notes</CardTitle>
+          </CardHeader>
+          <CardContent className="flex-1 flex flex-col p-0">
+            {surah ? (
                 <Textarea
                   placeholder={`Jot down your reflections on ${surah.name.transliteration.en}...`}
-                  className="h-96"
+                  className="h-full flex-1 resize-none"
                 />
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="text-center text-sm text-muted-foreground p-4">
-              <p>Select a surah to start taking notes.</p>
-            </div>
-          )}
-        </SidebarContent>
-      </Sidebar>
+            ) : (
+              <div className="flex-1 flex items-center justify-center text-center text-sm text-muted-foreground p-4">
+                <p>Select a surah to start taking notes.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </aside>
     );
   }

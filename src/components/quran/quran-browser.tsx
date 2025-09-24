@@ -4,11 +4,9 @@
 import { useEffect, useState } from 'react';
 import type { Surah, SurahSummary } from '@/lib/quran-data';
 import { getSurah, getSurahs } from '@/lib/quran-api';
-import { Sidebar, SidebarInset } from '@/components/ui/sidebar';
-import { SurahList } from './surah-list';
 import { SurahView } from './surah-view';
-import { Skeleton } from '../ui/skeleton';
 import { RightSidebar } from './right-sidebar';
+import { Header } from '@/components/layout/header';
 
 export function QuranBrowser() {
   const [surahs, setSurahs] = useState<SurahSummary[]>([]);
@@ -23,7 +21,7 @@ export function QuranBrowser() {
         const surahList = await getSurahs();
         setSurahs(surahList);
         if (surahList.length > 0) {
-            handleSelectSurah(surahList[0]);
+          handleSelectSurah(surahList[0]);
         }
       } catch (error) {
         console.error('Failed to fetch surahs:', error);
@@ -51,28 +49,21 @@ export function QuranBrowser() {
   };
 
   return (
-    <>
-      <Sidebar className="border-r p-0" collapsible="icon">
-        {isLoadingSurahs ? (
-            <div className="p-2 space-y-2">
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-            </div>
-        ) : (
-            <SurahList
-              surahs={surahs}
-              selectedSurah={selectedSurahSummary}
-              onSelectSurah={handleSelectSurah}
+    <div className="flex h-screen w-full">
+        <main className="flex flex-1 flex-col">
+            <Header 
+                surahs={surahs}
+                selectedSurah={selectedSurahSummary}
+                onSelectSurah={handleSelectSurah}
+                isLoading={isLoadingSurahs}
             />
-        )}
-      </Sidebar>
-      <SidebarInset className="p-0 m-0 rounded-none shadow-none bg-transparent">
-        <SurahView surah={selectedSurah} isLoading={isLoadingSurah} />
-      </SidebarInset>
-      <RightSidebar surah={selectedSurah} />
-    </>
+            <div className="flex flex-1 overflow-hidden">
+                <div className="flex-1 overflow-y-auto">
+                    <SurahView surah={selectedSurah} isLoading={isLoadingSurah || isLoadingSurahs} />
+                </div>
+                <RightSidebar surah={selectedSurah} />
+            </div>
+        </main>
+    </div>
   );
 }
