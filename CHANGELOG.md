@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Scaffolded hadith integration via api.hadith.gading.dev with collections index and detail pages.
+- Introduced a hadith workspace featuring rich notes, bookmarking, AI summaries, and sharing controls.
+- Unified Arabic typography across Quran and Hadith experiences using the dedicated Noto Naskh font.
+
 ### Changed
 - Replaced Firebase authentication with NextAuth-powered Google sign-in and removed Firebase-specific configuration.
 - Refreshed environment samples and contributor documentation to highlight the new authentication flow.
