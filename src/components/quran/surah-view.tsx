@@ -83,7 +83,7 @@ export function SurahView({ surah, isLoading }: SurahViewProps) {
             <p className="text-muted-foreground">{surah.numberOfVerses} verses</p>
         </div>
         <div className="flex items-center justify-end">
-            <h1 dir="rtl" className="font-quran text-3xl font-bold text-primary">
+            <h1 dir="rtl" className="font-naskh text-4xl font-bold text-primary">
                 {surah.name.long}
             </h1>
         </div>

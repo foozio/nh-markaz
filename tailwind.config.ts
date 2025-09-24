@@ -14,6 +14,7 @@ export default {
         headline: ['Alegreya', 'serif'],
         code: ['monospace'],
         quran: ['"Amiri Quran"', 'serif'],
+        naskh: ['"Noto Naskh Arabic"', 'serif'],
       },
       colors: {
         background: 'hsl(var(--background))',
