@@ -37,46 +37,7 @@ export async function getSurahs(): Promise<SurahSummary[]> {
   return fetchFromApi<SurahSummary[]>('/surah');
 }
 
-async function getUrduTranslation(surahNumber: number): Promise<Record<number, string>> {
-    try {
-        // Unfortunately, quran.gading.dev doesn't directly support Urdu in the same way.
-        // We'll use a different source for Urdu translations. This one is from Tanzil.
-        const response = await fetch(`https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/urd-muhammadjunagar-la/${surahNumber}.json`);
-        if (!response.ok) {
-            console.warn(`Could not fetch Urdu translation for surah ${surahNumber}`);
-            return {};
-        }
-        const data = await response.json();
-        const urduTranslations: Record<number, string> = {};
-        if (data.chapter) {
-             data.chapter.forEach((v: {verse: number, text: string}) => {
-                urduTranslations[v.verse] = v.text;
-             });
-        }
-        return urduTranslations;
-    } catch (error) {
-        console.warn(`Error fetching Urdu translation for surah ${surahNumber}:`, error);
-        return {};
-    }
-}
-
-
 export async function getSurah(surahNumber: number): Promise<Surah> {
     const surahData = await fetchFromApi<Surah>(`/surah/${surahNumber}`);
-    const urduTranslations = await getUrduTranslation(surahNumber);
-    
-    // Add urdu translation to each verse
-    if (surahData && surahData.verses) {
-        surahData.verses = surahData.verses.map(verse => {
-            return {
-                ...verse,
-                translation: {
-                    ...verse.translation,
-                    ur: urduTranslations[verse.number.inSurah] || "Translation not available"
-                }
-            };
-        });
-    }
-
     return surahData;
 }

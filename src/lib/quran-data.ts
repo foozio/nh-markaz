@@ -14,7 +14,6 @@ export interface Ayah {
   translation: {
     en: string;
     id: string;
-    ur: string; // Assuming Urdu translation will be added or handled elsewhere.
   };
   audio: {
     primary: string;
