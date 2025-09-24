@@ -10,8 +10,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Alegreya', 'serif'],
-        headline: ['Alegreya', 'serif'],
+        body: ['"Noto Sans"', 'sans-serif'],
+        headline: ['"Noto Sans"', 'sans-serif'],
         code: ['monospace'],
         quran: ['"Noto Naskh Arabic"', 'serif'],
         naskh: ['"Noto Naskh Arabic"', 'serif'],
