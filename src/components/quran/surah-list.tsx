@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { Surah } from '@/lib/quran-data';
+import type { SurahSummary } from '@/lib/quran-data';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   SidebarContent,
@@ -10,12 +10,11 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from '@/components/ui/sidebar';
-import { BookMarked } from 'lucide-react';
 
 interface SurahListProps {
-  surahs: Surah[];
-  selectedSurah: Surah | null;
-  onSelectSurah: (surah: Surah) => void;
+  surahs: SurahSummary[];
+  selectedSurah: SurahSummary | null;
+  onSelectSurah: (surah: SurahSummary) => void;
 }
 
 export function SurahList({
@@ -32,16 +31,16 @@ export function SurahList({
         <ScrollArea className="h-full">
           <SidebarMenu>
             {surahs.map((surah) => (
-              <SidebarMenuItem key={surah.id}>
+              <SidebarMenuItem key={surah.number}>
                 <SidebarMenuButton
                   onClick={() => onSelectSurah(surah)}
-                  isActive={selectedSurah?.id === surah.id}
+                  isActive={selectedSurah?.number === surah.number}
                   className="justify-between"
                   tooltip={{
                     children: (
                       <div className="text-left">
-                        <p className="font-bold">{surah.transliteration}</p>
-                        <p className="text-xs text-muted-foreground">{surah.translation}</p>
+                        <p className="font-bold">{surah.name.transliteration.en}</p>
+                        <p className="text-xs text-muted-foreground">{surah.name.translation.en}</p>
                       </div>
                     ),
                     className: "w-40"
@@ -49,18 +48,18 @@ export function SurahList({
                 >
                   <div className="flex items-center gap-3">
                     <span className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-muted-foreground">
-                      {surah.id}
+                      {surah.number}
                     </span>
                     <div className="flex flex-col items-start">
                       <span className="font-medium">
-                        {surah.transliteration}
+                        {surah.name.transliteration.en}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {surah.translation}
+                        {surah.name.translation.en}
                       </span>
                     </div>
                   </div>
-                  <span className="font-mono text-sm">{surah.name}</span>
+                  <span className="font-mono text-sm">{surah.name.long.split('سُورَةُ ')[1]}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}

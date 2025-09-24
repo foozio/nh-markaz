@@ -32,7 +32,7 @@ export function VerseItem({ verse, surahId }: VerseItemProps) {
     setIsLoading(true);
     setSummary('');
     setIsDialogOpen(true);
-    const result = await getVerseSummary(verse.translations.en);
+    const result = await getVerseSummary(verse.translation.en);
     if (result.summary) {
       setSummary(result.summary);
     } else {
@@ -50,7 +50,7 @@ export function VerseItem({ verse, surahId }: VerseItemProps) {
     setIsBookmarked(!isBookmarked);
     toast({
       title: isBookmarked ? 'Bookmark removed' : 'Bookmark added',
-      description: `Verse ${surahId}:${verse.id} has been ${
+      description: `Verse ${surahId}:${verse.number.inSurah} has been ${
         isBookmarked ? 'removed from' : 'added to'
       } your bookmarks.`,
     });
@@ -60,26 +60,35 @@ export function VerseItem({ verse, surahId }: VerseItemProps) {
     // Mock audio playback
     toast({
         title: "Playing Audio",
-        description: `Recitation for verse ${surahId}:${verse.id}.`
+        description: `Recitation for verse ${surahId}:${verse.number.inSurah}.`
     });
     // In a real app, you would use a library like howler.js
-    // const sound = new Howl({ src: [verse.audio] });
-    // sound.play();
+    try {
+      const sound = new Audio(verse.audio.primary);
+      sound.play();
+    } catch (e) {
+      console.error("Failed to play audio", e);
+      toast({
+        variant: 'destructive',
+        title: 'Audio Error',
+        description: 'Could not play audio for this verse.'
+      })
+    }
   }
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-start justify-between gap-4">
-        <span className="text-sm font-bold text-primary">{`${surahId}:${verse.id}`}</span>
+        <span className="text-sm font-bold text-primary">{`${surahId}:${verse.number.inSurah}`}</span>
         <p dir="rtl" className="flex-1 text-right font-headline text-3xl leading-relaxed text-foreground">
-          {verse.text}
+          {verse.text.arab}
         </p>
       </div>
 
       <div className="space-y-4 text-muted-foreground">
         <div className="space-y-2">
-            <p className="text-lg italic text-foreground/80 leading-loose">{verse.translations.en}</p>
-            <p className="font-sans text-right leading-loose">{verse.translations.ur}</p>
+            <p className="text-lg italic text-foreground/80 leading-loose">{verse.translation.en}</p>
+            {verse.translation.ur && <p className="font-sans text-right leading-loose">{verse.translation.ur}</p>}
         </div>
       </div>
 
@@ -103,7 +112,7 @@ export function VerseItem({ verse, surahId }: VerseItemProps) {
           <DialogHeader>
             <DialogTitle className="font-headline">AI Summary</DialogTitle>
             <DialogDescription>
-              A concise explanation of verse {`${surahId}:${verse.id}`}.
+              A concise explanation of verse {`${surahId}:${verse.number.inSurah}`}.
             </DialogDescription>
           </DialogHeader>
           {isLoading ? (

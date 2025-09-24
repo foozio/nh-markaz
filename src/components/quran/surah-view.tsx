@@ -15,13 +15,30 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import { VerseItem } from './verse-item';
 import { Separator } from '../ui/separator';
+import { Skeleton } from '../ui/skeleton';
+import { Loader2 } from 'lucide-react';
 
 interface SurahViewProps {
   surah: Surah | null;
+  isLoading: boolean;
 }
 
-export function SurahView({ surah }: SurahViewProps) {
+export function SurahView({ surah, isLoading }: SurahViewProps) {
   const quranPageImage = PlaceHolderImages.find((img) => img.id === 'quran-page');
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center bg-muted/40">
+        <div className="text-center flex items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <div>
+            <h2 className="text-2xl font-bold font-headline">Loading Surah...</h2>
+            <p className="text-muted-foreground">Please wait a moment.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!surah) {
     return (
@@ -41,13 +58,13 @@ export function SurahView({ surah }: SurahViewProps) {
       <div className="grid flex-shrink-0 gap-6 border-b p-4 md:grid-cols-2 lg:gap-8 lg:p-6">
         <div className="flex flex-col gap-2">
             <h2 className="font-headline text-2xl font-bold tracking-tight">
-              {surah.transliteration} - {surah.translation}
+              {surah.name.transliteration.en} - {surah.name.translation.en}
             </h2>
-            <p className="text-muted-foreground">{surah.total_verses} verses</p>
+            <p className="text-muted-foreground">{surah.numberOfVerses} verses</p>
         </div>
         <div className="flex items-center justify-end">
             <h1 dir="rtl" className="font-headline text-3xl font-bold text-primary">
-                {surah.name}
+                {surah.name.long}
             </h1>
         </div>
       </div>
@@ -70,7 +87,7 @@ export function SurahView({ surah }: SurahViewProps) {
                 <Card>
                     <CardHeader>
                         <CardTitle className='font-headline'>My Notes</CardTitle>
-                        <CardDescription>Jot down your reflections on {surah.transliteration}.</CardDescription>
+                        <CardDescription>Jot down your reflections on {surah.name.transliteration.en}.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Textarea placeholder="Type your notes here..." className="h-48" />
@@ -82,8 +99,8 @@ export function SurahView({ surah }: SurahViewProps) {
             <div className="p-4 lg:p-6">
                 <div className="space-y-4">
                     {surah.verses.map((verse, index) => (
-                        <div key={verse.id}>
-                            <VerseItem verse={verse} surahId={surah.id} />
+                        <div key={verse.number.inQuran}>
+                            <VerseItem verse={verse} surahId={surah.number} />
                             {index < surah.verses.length - 1 && <Separator className="my-6" />}
                         </div>
                     ))}
