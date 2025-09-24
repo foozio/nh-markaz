@@ -4,10 +4,11 @@
 import { useEffect, useState } from 'react';
 import type { Surah, SurahSummary } from '@/lib/quran-data';
 import { getSurah, getSurahs } from '@/lib/quran-api';
-import { Sidebar, SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
+import { Sidebar, SidebarInset } from '@/components/ui/sidebar';
 import { SurahList } from './surah-list';
 import { SurahView } from './surah-view';
 import { Skeleton } from '../ui/skeleton';
+import { RightSidebar } from './right-sidebar';
 
 export function QuranBrowser() {
   const [surahs, setSurahs] = useState<SurahSummary[]>([]);
@@ -50,7 +51,7 @@ export function QuranBrowser() {
   };
 
   return (
-    <SidebarProvider defaultOpen={true}>
+    <>
       <Sidebar className="border-r p-0" collapsible="icon">
         {isLoadingSurahs ? (
             <div className="p-2 space-y-2">
@@ -71,6 +72,7 @@ export function QuranBrowser() {
       <SidebarInset className="p-0 m-0 rounded-none shadow-none bg-transparent">
         <SurahView surah={selectedSurah} isLoading={isLoadingSurah} />
       </SidebarInset>
-    </SidebarProvider>
+      <RightSidebar surah={selectedSurah} />
+    </>
   );
 }

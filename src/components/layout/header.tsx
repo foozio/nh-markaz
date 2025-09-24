@@ -1,9 +1,17 @@
+
+'use client';
+
 import { cn } from "@/lib/utils";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar";
 
 export function Header() {
+  const { isMobile } = useSidebar();
+
   return (
     <header className="flex h-16 items-center border-b bg-background/95 px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex items-center gap-3">
+        {isMobile && <SidebarTrigger />}
         <MoonStarIcon className="h-6 w-6 text-primary" />
         <h1 className="font-headline text-2xl font-bold text-primary">
           Noor Al-Quran

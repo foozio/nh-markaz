@@ -1,32 +1,35 @@
 
 'use client';
 
+import { useState, useMemo } from 'react';
 import type { Surah } from '@/lib/quran-data';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Textarea } from '@/components/ui/textarea';
 import { VerseItem } from './verse-item';
 import { Separator } from '../ui/separator';
-import { Loader2 } from 'lucide-react';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
+import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface SurahViewProps {
   surah: Surah | null;
   isLoading: boolean;
 }
 
+const VERSES_PER_PAGE = 10;
+
 export function SurahView({ surah, isLoading }: SurahViewProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = surah
+    ? Math.ceil(surah.verses.length / VERSES_PER_PAGE)
+    : 0;
+
+  const paginatedVerses = useMemo(() => {
+    if (!surah) return [];
+    const startIndex = (currentPage - 1) * VERSES_PER_PAGE;
+    const endIndex = startIndex + VERSES_PER_PAGE;
+    return surah.verses.slice(startIndex, endIndex);
+  }, [surah, currentPage]);
+
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center bg-muted/40">
@@ -54,6 +57,18 @@ export function SurahView({ surah, isLoading }: SurahViewProps) {
     );
   }
 
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-auto flex-shrink-0 items-center justify-between gap-6 border-b p-4 lg:p-6">
@@ -73,31 +88,41 @@ export function SurahView({ surah, isLoading }: SurahViewProps) {
       <ScrollArea className="flex-1">
           <div className="p-4 lg:p-6">
               <div className="space-y-4">
-                  {surah.verses.map((verse, index) => (
+                  {paginatedVerses.map((verse, index) => (
                       <div key={verse.number.inQuran}>
                           <VerseItem verse={verse} surahId={surah.number} />
-                          {index < surah.verses.length - 1 && <Separator className="my-6" />}
+                          {index < paginatedVerses.length - 1 && <Separator className="my-6" />}
                       </div>
                   ))}
               </div>
           </div>
       </ScrollArea>
-      <div className="flex-shrink-0 border-t">
-          <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="notes" className="border-b-0">
-                  <AccordionTrigger className="p-4 lg:p-6 font-headline text-lg">My Notes</AccordionTrigger>
-                  <AccordionContent>
-                      <div className="px-4 lg:px-6 pb-4">
-                          <Card className="shadow-none border-0">
-                              <CardContent className="p-0">
-                                  <Textarea placeholder={`Jot down your reflections on ${surah.name.transliteration.en}...`} className="h-48" />
-                              </CardContent>
-                          </Card>
-                      </div>
-                  </AccordionContent>
-              </AccordionItem>
-          </Accordion>
-      </div>
+      
+      {totalPages > 1 && (
+        <div className="flex flex-shrink-0 items-center justify-center gap-4 border-t p-4">
+            <Button
+                variant="outline"
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+                aria-label="Previous page"
+            >
+                <ChevronLeft className="h-4 w-4" />
+                <span>Previous</span>
+            </Button>
+            <span className="text-sm font-medium text-muted-foreground">
+                Page {currentPage} of {totalPages}
+            </span>
+            <Button
+                variant="outline"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                aria-label="Next page"
+            >
+                <span>Next</span>
+                <ChevronRight className="h-4 w-4" />
+            </Button>
+        </div>
+      )}
     </div>
   );
 }
