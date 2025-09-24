@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'Noor Al-Quran',
+  title: 'Markaz',
   description: 'A beautiful and elegant Quran app for spiritual reading and study.',
 };
 

@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -33,7 +32,7 @@ export function Header({
       <div className="flex items-center gap-3">
         <MoonStarIcon className="h-6 w-6 text-primary" />
         <h1 className="font-headline text-2xl font-bold text-primary">
-          Noor Al-Quran
+          Markaz
         </h1>
       </div>
       <div className="w-64">
