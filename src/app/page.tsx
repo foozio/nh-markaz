@@ -30,7 +30,7 @@ export default function LandingPage() {
                         Selamat Datang di Markaz
                     </h1>
                     <p className="mx-auto mt-6 max-w-2xl text-lg text-foreground/80">
-                        Aplikasi Quran yang indah dan elegan untuk bacaan dan studi spiritual Anda.
+                        Mitra Belajar Quran Anda
                     </p>
                     <div className="mt-10 flex items-center justify-center gap-x-6">
                         <Button asChild size="lg">
