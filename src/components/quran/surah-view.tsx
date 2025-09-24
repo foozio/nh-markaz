@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { Surah } from '@/lib/quran-data';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { VerseItem } from './verse-item';
@@ -18,6 +18,10 @@ const VERSES_PER_PAGE = 10;
 
 export function SurahView({ surah, isLoading }: SurahViewProps) {
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [surah]);
 
   const totalPages = surah
     ? Math.ceil(surah.verses.length / VERSES_PER_PAGE)
@@ -79,7 +83,7 @@ export function SurahView({ surah, isLoading }: SurahViewProps) {
             <p className="text-muted-foreground">{surah.numberOfVerses} verses</p>
         </div>
         <div className="flex items-center justify-end">
-            <h1 dir="rtl" className="font-headline text-3xl font-bold text-primary">
+            <h1 dir="rtl" className="font-quran text-3xl font-bold text-primary">
                 {surah.name.long}
             </h1>
         </div>
