@@ -1,20 +1,20 @@
-# **App Name**: Noor Al-Quran
+# **App Name**: Markaz
 
 ## Core Features:
 
 - Surah & Ayah Browser: Browse the Quran by Surah and Ayah for easy navigation.
-- Multiple Translations: Display multiple Quran translations side by side for comparative study.
-- Audio Recitation: Listen to high-quality audio recitations of the Quran.
-- Verse Bookmarking: Bookmark favorite verses for quick access and future reference.
-- Note-Taking Tool: Enable users to take notes alongside the Medina-printed Quran pages, using a rich text editor.
-- AI-Powered Verse Summarization: Generate concise summaries of selected verses using AI, offering insights and explanations.
+- Bahasa Indonesia Translation: Present an Indonesian-focused translation alongside the Arabic text.
+- Verse Bookmarking: Bookmark important verses for quick access and future reference.
+- Rich Note-Taking: Capture reflections in a rich text editor, stored per-user via SQLite.
+- AI-Powered Summaries: Generate concise Indonesian summaries for selected verses using Gemini.
+- Google Sign-In: Authenticate readers securely with NextAuth + Google OAuth.
 
 ## Style Guidelines:
 
-- Primary color: Deep green (#2E8B57) to evoke tranquility and connection with nature.
-- Background color: Off-white (#F8F8FF) to provide a clean, comfortable reading experience.
-- Accent color: Gold (#D4AF37) for highlighting important elements and creating a sense of elegance.
-- Body and headline font: 'Alegreya', a serif, for a blend of elegance and intellectual appeal.
-- Left side displays Medina-printed Quran pages; right side is a rich text editor for note-taking.
-- Use elegant, minimalist icons inspired by Islamic art for key actions (bookmarking, sharing).
-- Incorporate subtle, smooth transitions for navigation and actions to enhance the user experience.
+- Primary color: Emerald green to evoke tranquility and connection with nature.
+- Background color: Soft neutral tones to keep reading comfortable day or night.
+- Accent color: Warm gold for highlighting important elements and creating a sense of elegance.
+- Body font: `Noto Sans`; headline font: `Noto Naskh Arabic` to balance readability with classical nuance.
+- Layout keeps surah content to the left, with notes and bookmarks in a tidy right sidebar.
+- Use elegant, minimalist icons inspired by Islamic art for bookmarking, sharing, and AI summaries.
+- Incorporate subtle, smooth transitions for navigation and actions to enhance the overall experience.
