@@ -13,7 +13,7 @@ export default {
         body: ['Alegreya', 'serif'],
         headline: ['Alegreya', 'serif'],
         code: ['monospace'],
-        quran: ['"Amiri Quran"', 'serif'],
+        quran: ['"Noto Naskh Arabic"', 'serif'],
       },
       colors: {
         background: 'hsl(var(--background))',
