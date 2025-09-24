@@ -82,7 +82,9 @@ export function SurahView({
                   {verses.map((verse, index) => (
                       <div 
                         key={verse.number.inQuran}
-                        ref={el => verseRefs.current[`${surah.number}:${verse.number.inSurah}`] = el}
+                        ref={(el) => {
+                          verseRefs.current[`${surah.number}:${verse.number.inSurah}`] = el;
+                        }}
                       >
                           <VerseItem 
                             verse={verse} 
