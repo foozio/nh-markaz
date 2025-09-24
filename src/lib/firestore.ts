@@ -7,7 +7,7 @@ import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 export async function saveNotes(userId: string, notes: string) {
   try {
     const userNotesRef = doc(db, 'userNotes', userId);
-    await setDoc(userNotesesRef, {
+    await setDoc(userNotesRef, {
       notes,
       updatedAt: serverTimestamp(),
     }, { merge: true });
