@@ -1,21 +1,26 @@
-// DO NOT EDIT, THIS FILE IS MACHINE-GENERATED
 'use client';
 
 import {initializeApp, getApp, getApps} from 'firebase/app';
 import {getAuth} from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+
+function getEnv(variable: string) {
+  const value = process.env[variable];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${variable}`);
+  }
+  return value;
+}
 
 const firebaseConfig = {
-  projectId: 'studio-9753847643-b1026',
-  appId: '1:330580492706:web:d84bf7da1b5f79678232fb',
-  apiKey: 'AIzaSyANmSRSJiQHYqt_Q7vOK1-4WaCy1HB1Wiw',
-  authDomain: 'studio-9753847643-b1026.firebaseapp.com',
-  measurementId: '',
-  messagingSenderId: '330580492706',
+  projectId: getEnv('NEXT_PUBLIC_FIREBASE_PROJECT_ID'),
+  appId: getEnv('NEXT_PUBLIC_FIREBASE_APP_ID'),
+  apiKey: getEnv('NEXT_PUBLIC_FIREBASE_API_KEY'),
+  authDomain: getEnv('NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN'),
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || undefined,
+  messagingSenderId: getEnv('NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID'),
 };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
-const db = getFirestore(app);
 
-export {app, auth, db};
+export {app, auth};
