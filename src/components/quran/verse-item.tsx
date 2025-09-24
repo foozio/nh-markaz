@@ -80,7 +80,7 @@ export function VerseItem({ verse, surahId }: VerseItemProps) {
     <div className="flex flex-col gap-6">
       <div className="flex items-start justify-between gap-4">
         <span className="text-sm font-bold text-primary">{`${surahId}:${verse.number.inSurah}`}</span>
-        <p dir="rtl" className="flex-1 text-right font-headline text-3xl leading-relaxed text-foreground">
+        <p dir="rtl" className="flex-1 text-right font-quran text-3xl leading-relaxed text-foreground">
           {verse.text.arab}
         </p>
       </div>
