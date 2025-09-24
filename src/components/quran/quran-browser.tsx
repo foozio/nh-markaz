@@ -7,20 +7,32 @@ import { getSurah, getSurahs } from '@/lib/quran-api';
 import { SurahView } from './surah-view';
 import { RightSidebar } from './right-sidebar';
 import { QuranHeader } from '@/components/layout/quran-header';
+import { useAuth } from '@/hooks/use-auth';
+import { loadNotes, saveNotes } from '@/lib/firestore';
+import { useToast } from '@/hooks/use-toast';
 
 export function QuranBrowser() {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [surahs, setSurahs] = useState<SurahSummary[]>([]);
   const [selectedSurah, setSelectedSurah] = useState<Surah | null>(null);
   const [selectedSurahSummary, setSelectedSurahSummary] = useState<SurahSummary | null>(null);
   const [isLoadingSurahs, setIsLoadingSurahs] = useState(true);
   const [isLoadingSurah, setIsLoadingSurah] = useState(false);
+  const [isLoadingNotes, setIsLoadingNotes] = useState(true);
+  const [isSavingNotes, setIsSavingNotes] = useState(false);
   const [notes, setNotes] = useState('');
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const verseRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   useEffect(() => {
-    async function fetchSurahs() {
+    async function fetchInitialData() {
+      if (!user) return;
+      setIsLoadingSurahs(true);
+      setIsLoadingNotes(true);
+
       try {
+        // Fetch surahs
         const surahList = await getSurahs();
         setSurahs(surahList);
         if (surahList.length > 0) {
@@ -28,12 +40,25 @@ export function QuranBrowser() {
         }
       } catch (error) {
         console.error('Gagal memuat surah:', error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Gagal memuat daftar surah.' });
       } finally {
         setIsLoadingSurahs(false);
       }
+
+      // Fetch notes
+      try {
+        const { notes: loadedNotes, error } = await loadNotes(user.uid);
+        if (error) {
+          toast({ variant: 'destructive', title: 'Error', description: 'Gagal memuat catatan.' });
+        } else if (loadedNotes) {
+          setNotes(loadedNotes);
+        }
+      } finally {
+        setIsLoadingNotes(false);
+      }
     }
-    fetchSurahs();
-  }, []);
+    fetchInitialData();
+  }, [user]);
 
   const handleSelectSurah = async (surahSummary: SurahSummary, verseNumber?: number) => {
     if (selectedSurahSummary?.number === surahSummary.number && !verseNumber) return;
@@ -103,6 +128,26 @@ export function QuranBrowser() {
     });
   }
 
+  const handleSaveNotes = async () => {
+    if (!user) return;
+    setIsSavingNotes(true);
+    const { success, error } = await saveNotes(user.uid, notes);
+    if (success) {
+      toast({
+        title: 'Catatan Disimpan',
+        description: 'Catatan Anda telah berhasil disimpan.',
+      });
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Gagal Menyimpan',
+        description: error,
+      });
+    }
+    setIsSavingNotes(false);
+  };
+
+
   return (
     <div className="flex h-screen w-full">
         <main className="flex flex-1 flex-col">
@@ -130,6 +175,9 @@ export function QuranBrowser() {
                     onNotesChange={setNotes}
                     bookmarks={bookmarks}
                     onNavigateToVerse={handleNavigateToVerse}
+                    onSaveNotes={handleSaveNotes}
+                    isSavingNotes={isSavingNotes}
+                    isLoadingNotes={isLoadingNotes}
                 />
             </div>
         </main>
