@@ -5,7 +5,7 @@ Thanks for contributing to NH Markaz! We’re excited to collaborate with the co
 ## Getting Started
 1. Fork the repository and clone your fork locally.
 2. Install dependencies with `npm install`.
-3. Create a copy of `.env.example` and rename it to `.env`, then add your keys.
+3. Create a copy of `.env.example` and rename it to `.env`, then supply a `NEXTAUTH_SECRET`, Google OAuth credentials, and optional Gemini key.
 4. Run `npm run dev` to ensure the project builds and starts.
 
 ## Development Workflow

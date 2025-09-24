@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Replaced Firebase authentication with NextAuth-powered Google sign-in and removed Firebase-specific configuration.
+- Refreshed environment samples and contributor documentation to highlight the new authentication flow.
 
 ## [0.1.0] - 2025-09-24
 
