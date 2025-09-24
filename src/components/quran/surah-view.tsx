@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import type { Surah } from '@/lib/quran-data';
+import type { Surah, Ayah } from '@/lib/quran-data';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { VerseItem } from './verse-item';
 import { Separator } from '../ui/separator';
@@ -12,11 +12,12 @@ import { Button } from '@/components/ui/button';
 interface SurahViewProps {
   surah: Surah | null;
   isLoading: boolean;
+  onAddToNotes: (verse: Ayah) => void;
 }
 
 const VERSES_PER_PAGE = 10;
 
-export function SurahView({ surah, isLoading }: SurahViewProps) {
+export function SurahView({ surah, isLoading, onAddToNotes }: SurahViewProps) {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
@@ -94,7 +95,11 @@ export function SurahView({ surah, isLoading }: SurahViewProps) {
               <div className="space-y-4">
                   {paginatedVerses.map((verse, index) => (
                       <div key={verse.number.inQuran}>
-                          <VerseItem verse={verse} surahId={surah.number} />
+                          <VerseItem 
+                            verse={verse} 
+                            surahId={surah.number}
+                            onAddToNotes={() => onAddToNotes(verse)}
+                          />
                           {index < paginatedVerses.length - 1 && <Separator className="my-6" />}
                       </div>
                   ))}

@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { Surah, SurahSummary } from '@/lib/quran-data';
+import type { Surah, SurahSummary, Ayah } from '@/lib/quran-data';
 import { getSurah, getSurahs } from '@/lib/quran-api';
 import { SurahView } from './surah-view';
 import { RightSidebar } from './right-sidebar';
@@ -14,6 +14,7 @@ export function QuranBrowser() {
   const [selectedSurahSummary, setSelectedSurahSummary] = useState<SurahSummary | null>(null);
   const [isLoadingSurahs, setIsLoadingSurahs] = useState(true);
   const [isLoadingSurah, setIsLoadingSurah] = useState(false);
+  const [notes, setNotes] = useState('');
 
   useEffect(() => {
     async function fetchSurahs() {
@@ -48,6 +49,15 @@ export function QuranBrowser() {
     }
   };
 
+  const handleAddToNotes = (verse: Ayah) => {
+    const verseReference = `Surah ${selectedSurah?.name.transliteration.en} (${selectedSurah?.number}:${verse.number.inSurah})\n`;
+    const arabicText = `${verse.text.arab}\n`;
+    const englishTranslation = `"${verse.translation.en}"\n\n`;
+    const noteText = `${verseReference}${arabicText}${englishTranslation}`;
+    
+    setNotes(prevNotes => prevNotes ? `${prevNotes}${noteText}` : noteText);
+  };
+
   return (
     <div className="flex h-screen w-full">
         <main className="flex flex-1 flex-col">
@@ -59,9 +69,17 @@ export function QuranBrowser() {
             />
             <div className="flex flex-1 overflow-hidden">
                 <div className="flex-1 overflow-y-auto">
-                    <SurahView surah={selectedSurah} isLoading={isLoadingSurah || isLoadingSurahs} />
+                    <SurahView 
+                        surah={selectedSurah} 
+                        isLoading={isLoadingSurah || isLoadingSurahs}
+                        onAddToNotes={handleAddToNotes}
+                    />
                 </div>
-                <RightSidebar surah={selectedSurah} />
+                <RightSidebar 
+                    surah={selectedSurah}
+                    notes={notes}
+                    onNotesChange={setNotes}
+                />
             </div>
         </main>
     </div>

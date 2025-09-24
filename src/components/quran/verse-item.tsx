@@ -13,15 +13,16 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Bookmark, PlayCircle, Share2, Sparkles, Loader2 } from 'lucide-react';
+import { Bookmark, PlayCircle, Share2, Sparkles, Loader2, FilePlus } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 
 interface VerseItemProps {
   verse: Ayah;
   surahId: number;
+  onAddToNotes: () => void;
 }
 
-export function VerseItem({ verse, surahId }: VerseItemProps) {
+export function VerseItem({ verse, surahId, onAddToNotes }: VerseItemProps) {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [summary, setSummary] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -76,6 +77,14 @@ export function VerseItem({ verse, surahId }: VerseItemProps) {
     }
   }
 
+  const handleAddToNotesClick = () => {
+    onAddToNotes();
+    toast({
+      title: 'Verse Added',
+      description: `Verse ${surahId}:${verse.number.inSurah} has been added to your notes.`,
+    });
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-start justify-between gap-4">
@@ -104,6 +113,9 @@ export function VerseItem({ verse, surahId }: VerseItemProps) {
         </Button>
          <Button variant="ghost" size="icon" aria-label="Share verse">
           <Share2 className="h-5 w-5 text-primary/80" />
+        </Button>
+        <Button variant="ghost" size="icon" onClick={handleAddToNotesClick} aria-label="Add to notes">
+          <FilePlus className="h-5 w-5 text-primary/80" />
         </Button>
       </div>
 
