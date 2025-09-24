@@ -6,7 +6,7 @@ import type { Surah, SurahSummary, Ayah, Bookmark } from '@/lib/quran-data';
 import { getSurah, getSurahs } from '@/lib/quran-api';
 import { SurahView } from './surah-view';
 import { RightSidebar } from './right-sidebar';
-import { Header } from '@/components/layout/header';
+import { QuranHeader } from '@/components/layout/quran-header';
 
 export function QuranBrowser() {
   const [surahs, setSurahs] = useState<SurahSummary[]>([]);
@@ -106,7 +106,7 @@ export function QuranBrowser() {
   return (
     <div className="flex h-screen w-full">
         <main className="flex flex-1 flex-col">
-            <Header 
+            <QuranHeader 
                 surahs={surahs}
                 selectedSurah={selectedSurahSummary}
                 onSelectSurah={handleSelectSurah}
