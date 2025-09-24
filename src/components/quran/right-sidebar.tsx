@@ -10,8 +10,10 @@ import {
 import type { Surah, Bookmark } from '@/lib/quran-data';
 import { RichTextEditor } from './rich-text-editor';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Bookmark as BookmarkIcon } from 'lucide-react';
+import { Bookmark as BookmarkIcon, Save, Loader2 } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
+import { Button } from '../ui/button';
+import { Skeleton } from '../ui/skeleton';
   
   interface RightSidebarProps {
     surah: Surah | null;
@@ -19,9 +21,12 @@ import { ScrollArea } from '../ui/scroll-area';
     onNotesChange: (notes: string) => void;
     bookmarks: Bookmark[];
     onNavigateToVerse: (bookmark: Bookmark) => void;
+    onSaveNotes: () => void;
+    isSavingNotes: boolean;
+    isLoadingNotes: boolean;
   }
   
-  export function RightSidebar({ surah, notes, onNotesChange, bookmarks, onNavigateToVerse }: RightSidebarProps) {
+  export function RightSidebar({ surah, notes, onNotesChange, bookmarks, onNavigateToVerse, onSaveNotes, isSavingNotes, isLoadingNotes }: RightSidebarProps) {
     return (
       <aside className="w-[350px] border-l bg-background p-4 flex flex-col">
         <Tabs defaultValue="notes" className="flex-1 flex flex-col">
@@ -35,10 +40,26 @@ import { ScrollArea } from '../ui/scroll-area';
             <TabsContent value="notes" className="flex-1 flex flex-col mt-4">
                 <Card className="flex-1 flex flex-col shadow-none border-0">
                     <CardHeader className='p-0 pb-4'>
-                        <CardTitle className="font-headline text-xl font-semibold">Catatan Saya</CardTitle>
+                        <div className="flex items-center justify-between">
+                             <CardTitle className="font-headline text-xl font-semibold">Catatan Saya</CardTitle>
+                             <Button size="sm" onClick={onSaveNotes} disabled={isSavingNotes || isLoadingNotes}>
+                                {isSavingNotes ? (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Save className="mr-2 h-4 w-4" />
+                                )}
+                                Simpan
+                            </Button>
+                        </div>
                     </CardHeader>
                     <CardContent className="flex-1 flex flex-col p-0">
-                        {surah ? (
+                        {isLoadingNotes ? (
+                           <div className="space-y-2 flex-1">
+                                <Skeleton className="h-24 w-full" />
+                                <Skeleton className="h-4 w-full" />
+                                <Skeleton className="h-4 w-3/4" />
+                           </div>
+                        ) : surah ? (
                             <RichTextEditor
                             content={notes}
                             onChange={onNotesChange}
