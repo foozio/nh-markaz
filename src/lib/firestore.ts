@@ -27,7 +27,8 @@ export async function loadNotes(userId: string): Promise<{ notes?: string; error
       return { notes: docSnap.data().notes || '' };
     }
     return { notes: '' };
-  } catch (error) {
+  } catch (error)
+ {
     console.error('Error loading notes: ', error);
     const errorMessage = error instanceof Error ? error.message : 'Terjadi kesalahan yang tidak diketahui.';
     return { error: errorMessage };
