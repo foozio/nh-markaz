@@ -19,7 +19,7 @@ const SummarizeVerseInputSchema = z.object({
 export type SummarizeVerseInput = z.infer<typeof SummarizeVerseInputSchema>;
 
 const SummarizeVerseOutputSchema = z.object({
-  summary: z.string().describe('Ringkasan singkat dari ayat Al-Quran.'),
+  summary: z.string().describe('Ringkasan singkat dari ayat Al-Quran dalam Bahasa Indonesia.'),
 });
 export type SummarizeVerseOutput = z.infer<typeof SummarizeVerseOutputSchema>;
 
@@ -35,7 +35,7 @@ const summarizeVersePrompt = ai.definePrompt({
 
 Ayat: {{{verseText}}}
 
-Ringkasan:`, 
+Ringkasan:`,
 });
 
 const summarizeVerseFlow = ai.defineFlow(
