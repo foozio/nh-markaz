@@ -7,13 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Add entries here as new fixes and features are merged.
+### Changed
+- Replaced Firebase authentication with NextAuth-powered Google sign-in and removed Firebase-specific configuration.
 
 ## [0.1.0] - 2025-09-24
 
 ### Added
 - Initial Next.js experience for browsing the Quran with contextual translations.
-- Firebase Authentication setup together with persistent personal notes stored in SQLite.
+- Google authentication via NextAuth together with persistent personal notes stored in SQLite.
 - Gemini-powered AI summaries with a custom persona tailored for Indonesian readers.
 - Rich text editor improvements including toolbar controls, headings, and bookmark support.
 

@@ -1,14 +1,14 @@
 
 'use client';
 
-import React, { createContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import React, { createContext, useEffect } from 'react';
+import { SessionProvider, useSession } from 'next-auth/react';
+import type { Session } from 'next-auth';
 import { usePathname, useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
 export interface AuthContextType {
-  user: User | null;
+  user: Session['user'] | null;
   loading: boolean;
 }
 
@@ -16,34 +16,26 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 const publicRoutes = ['/', '/login'];
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+function AuthStateGate({ children }: { children: React.ReactNode }) {
+  const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
+  const isPublicRoute = publicRoutes.includes(pathname);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
+    if (status === 'loading') return;
 
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (loading) return;
-
-    const isPublicRoute = publicRoutes.includes(pathname);
-
-    if (!user && !isPublicRoute) {
+    if (!session && !isPublicRoute) {
       router.push('/login');
-    } else if (user && (pathname === '/login' || pathname === '/')) {
+    } else if (session && (pathname === '/login' || pathname === '/')) {
       router.push('/quran');
     }
-  }, [user, loading, router, pathname]);
+  }, [session, status, pathname, router, isPublicRoute]);
 
-  if (loading || (!user && !publicRoutes.includes(pathname)) || (user && publicRoutes.includes(pathname))) {
+  const loading = status === 'loading';
+  const user = session?.user ?? null;
+
+  if (loading || (!user && !isPublicRoute) || (user && isPublicRoute)) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <div className="text-center flex items-center gap-4">
@@ -61,5 +53,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider value={{ user, loading }}>
       {children}
     </AuthContext.Provider>
+  );
+}
+
+export function AuthProvider({ children, session }: { children: React.ReactNode; session: Session | null }) {
+  return (
+    <SessionProvider session={session}>
+      <AuthStateGate>{children}</AuthStateGate>
+    </SessionProvider>
   );
 }

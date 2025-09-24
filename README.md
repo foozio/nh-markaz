@@ -4,7 +4,7 @@ NH Markaz is an open-source Quran study assistant built with Next.js. It pairs r
 
 ## Features
 - Quran browser with translations and rich verse context
-- Secure Firebase Authentication for sign-in
+- Secure Google sign-in powered by NextAuth
 - Persistent personal notes stored locally with SQLite
 - Optional Gemini integration for AI-assisted summaries
 
@@ -26,12 +26,10 @@ The following values are required:
 | Variable | Description |
 | --- | --- |
 | `GEMINI_API_KEY` | Google Gemini API key (optional if you disable AI features) |
-| `NEXT_PUBLIC_FIREBASE_API_KEY` | Firebase Web API key |
-| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Firebase Auth domain |
-| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Firebase project ID |
-| `NEXT_PUBLIC_FIREBASE_APP_ID` | Firebase application ID |
-| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Firebase messaging sender ID |
-| `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID` | Firebase analytics measurement ID (optional) |
+| `NEXTAUTH_URL` | Base URL used by NextAuth callbacks (e.g. `http://localhost:9002`) |
+| `NEXTAUTH_SECRET` | Strong random string for signing NextAuth JWTs |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
 
 ## Database
 The project uses SQLite for storing personal notes. The database file is automatically created at `data/notes.db` and is ignored by Git.

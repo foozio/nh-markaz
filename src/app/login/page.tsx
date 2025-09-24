@@ -3,8 +3,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { auth } from '@/lib/firebase';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { MoonStarIcon } from '@/components/layout/quran-header';
@@ -37,10 +36,14 @@ export default function LoginPage() {
     const { toast } = useToast();
 
     const handleGoogleSignIn = async () => {
-        const provider = new GoogleAuthProvider();
         try {
-            await signInWithPopup(auth, provider);
-            router.push('/quran');
+            const result = await signIn('google', { callbackUrl: '/quran', redirect: false });
+            if (result?.error) {
+                throw new Error(result.error);
+            }
+            if (result?.url) {
+                router.push(result.url);
+            }
             toast({
                 title: "Login Berhasil",
                 description: "Selamat datang kembali di Markaz!",
