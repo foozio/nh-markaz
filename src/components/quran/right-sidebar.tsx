@@ -7,8 +7,8 @@ import {
     CardHeader,
     CardTitle
 } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
 import type { Surah } from '@/lib/quran-data';
+import { RichTextEditor } from './rich-text-editor';
   
   interface RightSidebarProps {
     surah: Surah | null;
@@ -25,11 +25,10 @@ import type { Surah } from '@/lib/quran-data';
           </CardHeader>
           <CardContent className="flex-1 flex flex-col p-0">
             {surah ? (
-                <Textarea
+                <RichTextEditor
+                  content={notes}
+                  onChange={onNotesChange}
                   placeholder={`Jot down your reflections on ${surah.name.transliteration.en}...`}
-                  className="h-full flex-1 resize-none"
-                  value={notes}
-                  onChange={(e) => onNotesChange(e.target.value)}
                 />
             ) : (
               <div className="flex-1 flex items-center justify-center text-center text-sm text-muted-foreground p-4">

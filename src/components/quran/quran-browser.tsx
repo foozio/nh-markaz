@@ -50,9 +50,9 @@ export function QuranBrowser() {
   };
 
   const handleAddToNotes = (verse: Ayah) => {
-    const verseReference = `Surah ${selectedSurah?.name.transliteration.en} (${selectedSurah?.number}:${verse.number.inSurah})\n`;
-    const arabicText = `${verse.text.arab}\n`;
-    const englishTranslation = `"${verse.translation.en}"\n\n`;
+    const verseReference = `<h2>Surah ${selectedSurah?.name.transliteration.en} (${selectedSurah?.number}:${verse.number.inSurah})</h2>`;
+    const arabicText = `<p style="text-align: right; font-family: 'Amiri Quran', serif; font-size: 1.5rem;">${verse.text.arab}</p>`;
+    const englishTranslation = `<blockquote>${verse.translation.en}</blockquote><p></p>`;
     const noteText = `${verseReference}${arabicText}${englishTranslation}`;
     
     setNotes(prevNotes => prevNotes ? `${prevNotes}${noteText}` : noteText);
