@@ -25,7 +25,7 @@ import {
 import { LogOut, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-export function Header({
+export function QuranHeader({
   surahs,
   selectedSurah,
   onSelectSurah,
