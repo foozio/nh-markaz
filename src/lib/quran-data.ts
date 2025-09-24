@@ -38,3 +38,10 @@ export interface SurahSummary {
 export interface Surah extends SurahSummary {
   verses: Ayah[];
 }
+
+export interface Bookmark {
+    surahNumber: number;
+    verseNumber: number;
+    surahName: string;
+    text: string;
+}

@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
-import type { Surah, SurahSummary, Ayah } from '@/lib/quran-data';
+import { useEffect, useState, useRef } from 'react';
+import type { Surah, SurahSummary, Ayah, Bookmark } from '@/lib/quran-data';
 import { getSurah, getSurahs } from '@/lib/quran-api';
 import { SurahView } from './surah-view';
 import { RightSidebar } from './right-sidebar';
@@ -15,6 +15,8 @@ export function QuranBrowser() {
   const [isLoadingSurahs, setIsLoadingSurahs] = useState(true);
   const [isLoadingSurah, setIsLoadingSurah] = useState(false);
   const [notes, setNotes] = useState('');
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const verseRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   useEffect(() => {
     async function fetchSurahs() {
@@ -22,7 +24,7 @@ export function QuranBrowser() {
         const surahList = await getSurahs();
         setSurahs(surahList);
         if (surahList.length > 0) {
-          handleSelectSurah(surahList[0]);
+          await handleSelectSurah(surahList[0]);
         }
       } catch (error) {
         console.error('Gagal memuat surah:', error);
@@ -33,8 +35,8 @@ export function QuranBrowser() {
     fetchSurahs();
   }, []);
 
-  const handleSelectSurah = async (surahSummary: SurahSummary) => {
-    if (selectedSurahSummary?.number === surahSummary.number) return;
+  const handleSelectSurah = async (surahSummary: SurahSummary, verseNumber?: number) => {
+    if (selectedSurahSummary?.number === surahSummary.number && !verseNumber) return;
 
     setIsLoadingSurah(true);
     setSelectedSurahSummary(surahSummary);
@@ -42,12 +44,32 @@ export function QuranBrowser() {
     try {
       const surahDetail = await getSurah(surahSummary.number);
       setSelectedSurah(surahDetail);
+      
+      if (verseNumber) {
+        setTimeout(() => {
+            const verseId = `${surahSummary.number}:${verseNumber}`;
+            verseRefs.current[verseId]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+      }
+
     } catch (error) {
       console.error(`Gagal memuat surah ${surahSummary.number}:`, error);
     } finally {
       setIsLoadingSurah(false);
     }
   };
+
+  const handleNavigateToVerse = (bookmark: Bookmark) => {
+    const surahToSelect = surahs.find(s => s.number === bookmark.surahNumber);
+    if (surahToSelect) {
+        if (selectedSurah?.number !== bookmark.surahNumber) {
+            handleSelectSurah(surahToSelect, bookmark.verseNumber);
+        } else {
+             const verseId = `${bookmark.surahNumber}:${bookmark.verseNumber}`;
+             verseRefs.current[verseId]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+  }
 
   const handleAddToNotes = (verse: Ayah) => {
     const verseReference = `<h2>Surah ${selectedSurah?.name.transliteration.en} (${selectedSurah?.number}:${verse.number.inSurah})</h2>`;
@@ -66,6 +88,21 @@ export function QuranBrowser() {
     setNotes(prevNotes => prevNotes ? `${prevNotes}${noteText}` : noteText);
   };
 
+  const isVerseBookmarked = (surahNumber: number, verseNumber: number) => {
+    return bookmarks.some(b => b.surahNumber === surahNumber && b.verseNumber === verseNumber);
+  }
+
+  const handleToggleBookmark = (surahNumber: number, verseNumber: number, surahName: string, verseText: string) => {
+    setBookmarks(prev => {
+        const existing = isVerseBookmarked(surahNumber, verseNumber);
+        if (existing) {
+            return prev.filter(b => !(b.surahNumber === surahNumber && b.verseNumber === verseNumber));
+        } else {
+            return [...prev, { surahNumber, verseNumber, surahName, text: verseText }];
+        }
+    });
+  }
+
   return (
     <div className="flex h-screen w-full">
         <main className="flex flex-1 flex-col">
@@ -82,12 +119,17 @@ export function QuranBrowser() {
                         isLoading={isLoadingSurah || isLoadingSurahs}
                         onAddToNotes={handleAddToNotes}
                         onAddSummaryToNotes={handleAddSummaryToNotes}
+                        onToggleBookmark={handleToggleBookmark}
+                        isVerseBookmarked={isVerseBookmarked}
+                        verseRefs={verseRefs}
                     />
                 </div>
                 <RightSidebar 
                     surah={selectedSurah}
                     notes={notes}
                     onNotesChange={setNotes}
+                    bookmarks={bookmarks}
+                    onNavigateToVerse={handleNavigateToVerse}
                 />
             </div>
         </main>

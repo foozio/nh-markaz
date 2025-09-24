@@ -20,12 +20,14 @@ import { Skeleton } from '../ui/skeleton';
 interface VerseItemProps {
   verse: Ayah;
   surahId: number;
+  surahName: string;
   onAddToNotes: () => void;
   onAddSummaryToNotes: (summary: string) => void;
+  onToggleBookmark: (surahNumber: number, verseNumber: number, surahName: string, verseText: string) => void;
+  isBookmarked: boolean;
 }
 
-export function VerseItem({ verse, surahId, onAddToNotes, onAddSummaryToNotes }: VerseItemProps) {
-  const [isBookmarked, setIsBookmarked] = useState(false);
+export function VerseItem({ verse, surahId, surahName, onAddToNotes, onAddSummaryToNotes, onToggleBookmark, isBookmarked }: VerseItemProps) {
   const [summary, setSummary] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -50,7 +52,7 @@ export function VerseItem({ verse, surahId, onAddToNotes, onAddSummaryToNotes }:
   };
 
   const handleBookmark = () => {
-    setIsBookmarked(!isBookmarked);
+    onToggleBookmark(surahId, verse.number.inSurah, surahName, verse.translation.id);
     toast({
       title: isBookmarked ? 'Penanda dihapus' : 'Penanda ditambahkan',
       description: `Ayat ${surahId}:${verse.number.inSurah} telah ${
@@ -100,7 +102,7 @@ export function VerseItem({ verse, surahId, onAddToNotes, onAddSummaryToNotes }:
     <div className="flex flex-col gap-6">
       <div className="flex items-start justify-between gap-4">
         <span className="text-sm font-bold text-primary">{`${surahId}:${verse.number.inSurah}`}</span>
-        <p dir="rtl" className="flex-1 text-right font-quran text-3xl leading-relaxed text-foreground">
+        <p dir="rtl" className="flex-1 text-right font-naskh text-3xl leading-relaxed text-foreground">
           {verse.text.arab}
         </p>
       </div>

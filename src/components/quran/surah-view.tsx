@@ -1,40 +1,37 @@
 
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useMemo, MutableRefObject } from 'react';
 import type { Surah, Ayah } from '@/lib/quran-data';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { VerseItem } from './verse-item';
 import { Separator } from '../ui/separator';
-import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 
 interface SurahViewProps {
   surah: Surah | null;
   isLoading: boolean;
   onAddToNotes: (verse: Ayah) => void;
   onAddSummaryToNotes: (summary: string, verse: Ayah) => void;
+  onToggleBookmark: (surahNumber: number, verseNumber: number, surahName: string, verseText: string) => void;
+  isVerseBookmarked: (surahNumber: number, verseNumber: number) => boolean;
+  verseRefs: MutableRefObject<Record<string, HTMLDivElement | null>>;
 }
 
-const VERSES_PER_PAGE = 10;
-
-export function SurahView({ surah, isLoading, onAddToNotes, onAddSummaryToNotes }: SurahViewProps) {
-  const [currentPage, setCurrentPage] = useState(1);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [surah]);
-
-  const totalPages = surah
-    ? Math.ceil(surah.verses.length / VERSES_PER_PAGE)
-    : 0;
-
-  const paginatedVerses = useMemo(() => {
+export function SurahView({ 
+    surah, 
+    isLoading, 
+    onAddToNotes, 
+    onAddSummaryToNotes,
+    onToggleBookmark,
+    isVerseBookmarked,
+    verseRefs
+}: SurahViewProps) {
+  
+  const verses = useMemo(() => {
     if (!surah) return [];
-    const startIndex = (currentPage - 1) * VERSES_PER_PAGE;
-    const endIndex = startIndex + VERSES_PER_PAGE;
-    return surah.verses.slice(startIndex, endIndex);
-  }, [surah, currentPage]);
+    return surah.verses;
+  }, [surah]);
 
   if (isLoading) {
     return (
@@ -63,18 +60,6 @@ export function SurahView({ surah, isLoading, onAddToNotes, onAddSummaryToNotes 
     );
   }
 
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-auto flex-shrink-0 items-center justify-between gap-6 border-b p-4 lg:p-6">
@@ -94,46 +79,27 @@ export function SurahView({ surah, isLoading, onAddToNotes, onAddSummaryToNotes 
       <ScrollArea className="flex-1">
           <div className="p-4 lg:p-6">
               <div className="space-y-4">
-                  {paginatedVerses.map((verse, index) => (
-                      <div key={verse.number.inQuran}>
+                  {verses.map((verse, index) => (
+                      <div 
+                        key={verse.number.inQuran}
+                        ref={el => verseRefs.current[`${surah.number}:${verse.number.inSurah}`] = el}
+                      >
                           <VerseItem 
                             verse={verse} 
                             surahId={surah.number}
+                            surahName={surah.name.transliteration.en}
                             onAddToNotes={() => onAddToNotes(verse)}
                             onAddSummaryToNotes={(summary) => onAddSummaryToNotes(summary, verse)}
+                            onToggleBookmark={onToggleBookmark}
+                            isBookmarked={isVerseBookmarked(surah.number, verse.number.inSurah)}
                           />
-                          {index < paginatedVerses.length - 1 && <Separator className="my-6" />}
+                          {index < verses.length - 1 && <Separator className="my-6" />}
                       </div>
                   ))}
               </div>
           </div>
       </ScrollArea>
       
-      {totalPages > 1 && (
-        <div className="flex flex-shrink-0 items-center justify-center gap-4 border-t p-4">
-            <Button
-                variant="outline"
-                onClick={handlePrevPage}
-                disabled={currentPage === 1}
-                aria-label="Halaman sebelumnya"
-            >
-                <ChevronLeft className="h-4 w-4" />
-                <span>Sebelumnya</span>
-            </Button>
-            <span className="text-sm font-medium text-muted-foreground">
-                Halaman {currentPage} dari {totalPages}
-            </span>
-            <Button
-                variant="outline"
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-                aria-label="Halaman berikutnya"
-            >
-                <span>Berikutnya</span>
-                <ChevronRight className="h-4 w-4" />
-            </Button>
-        </div>
-      )}
     </div>
   );
 }
