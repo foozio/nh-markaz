@@ -88,6 +88,7 @@ export function VerseItem({ verse, surahId }: VerseItemProps) {
       <div className="space-y-4 text-muted-foreground">
         <div className="space-y-2">
             <p className="text-lg italic text-foreground/80 leading-loose">{verse.translation.en}</p>
+            {verse.translation.id && <p className="font-sans leading-loose">{verse.translation.id}</p>}
             {verse.translation.ur && <p className="font-sans text-right leading-loose">{verse.translation.ur}</p>}
         </div>
       </div>
