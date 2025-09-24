@@ -58,6 +58,14 @@ export function QuranBrowser() {
     setNotes(prevNotes => prevNotes ? `${prevNotes}${noteText}` : noteText);
   };
 
+  const handleAddSummaryToNotes = (summary: string, verse: Ayah) => {
+    const summaryReference = `<h2>Ringkasan AI untuk Surah ${selectedSurah?.name.transliteration.en} (${selectedSurah?.number}:${verse.number.inSurah})</h2>`;
+    const summaryText = `<p>${summary}</p><p></p>`;
+    const noteText = `${summaryReference}${summaryText}`;
+    
+    setNotes(prevNotes => prevNotes ? `${prevNotes}${noteText}` : noteText);
+  };
+
   return (
     <div className="flex h-screen w-full">
         <main className="flex flex-1 flex-col">
@@ -73,6 +81,7 @@ export function QuranBrowser() {
                         surah={selectedSurah} 
                         isLoading={isLoadingSurah || isLoadingSurahs}
                         onAddToNotes={handleAddToNotes}
+                        onAddSummaryToNotes={handleAddSummaryToNotes}
                     />
                 </div>
                 <RightSidebar 

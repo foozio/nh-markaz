@@ -11,6 +11,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Bookmark, PlayCircle, Share2, Sparkles, Loader2, FilePlus } from 'lucide-react';
@@ -20,9 +21,10 @@ interface VerseItemProps {
   verse: Ayah;
   surahId: number;
   onAddToNotes: () => void;
+  onAddSummaryToNotes: (summary: string) => void;
 }
 
-export function VerseItem({ verse, surahId, onAddToNotes }: VerseItemProps) {
+export function VerseItem({ verse, surahId, onAddToNotes, onAddSummaryToNotes }: VerseItemProps) {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [summary, setSummary] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -83,6 +85,17 @@ export function VerseItem({ verse, surahId, onAddToNotes }: VerseItemProps) {
     });
   }
 
+  const handleAddSummaryClick = () => {
+    if (summary) {
+      onAddSummaryToNotes(summary);
+      setIsDialogOpen(false);
+      toast({
+        title: 'Ringkasan Ditambahkan',
+        description: `Ringkasan AI untuk ayat ${surahId}:${verse.number.inSurah} telah ditambahkan ke catatan Anda.`,
+      });
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-start justify-between gap-4">
@@ -139,6 +152,11 @@ export function VerseItem({ verse, surahId, onAddToNotes }: VerseItemProps) {
               <p>{summary}</p>
             </div>
           )}
+           <DialogFooter>
+            <Button variant="ghost" size="icon" onClick={handleAddSummaryClick} aria-label="Tambah ringkasan ke catatan" disabled={isLoading || !summary}>
+              <FilePlus className="h-5 w-5 text-primary/80" />
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

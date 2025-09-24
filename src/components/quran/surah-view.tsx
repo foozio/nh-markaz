@@ -13,11 +13,12 @@ interface SurahViewProps {
   surah: Surah | null;
   isLoading: boolean;
   onAddToNotes: (verse: Ayah) => void;
+  onAddSummaryToNotes: (summary: string, verse: Ayah) => void;
 }
 
 const VERSES_PER_PAGE = 10;
 
-export function SurahView({ surah, isLoading, onAddToNotes }: SurahViewProps) {
+export function SurahView({ surah, isLoading, onAddToNotes, onAddSummaryToNotes }: SurahViewProps) {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
@@ -99,6 +100,7 @@ export function SurahView({ surah, isLoading, onAddToNotes }: SurahViewProps) {
                             verse={verse} 
                             surahId={surah.number}
                             onAddToNotes={() => onAddToNotes(verse)}
+                            onAddSummaryToNotes={(summary) => onAddSummaryToNotes(summary, verse)}
                           />
                           {index < paginatedVerses.length - 1 && <Separator className="my-6" />}
                       </div>
