@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 import { Separator } from '@/components/ui/separator';
+import { useEffect } from 'react';
 
 const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
   if (!editor) {
@@ -97,6 +98,12 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
       },
     },
   });
+
+  useEffect(() => {
+    if (editor && editor.getHTML() !== content) {
+      editor.commands.setContent(content, false);
+    }
+  }, [content, editor]);
 
   return (
     <div className="flex h-full flex-col rounded-md border bg-background">
