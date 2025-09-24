@@ -25,7 +25,7 @@ export function QuranBrowser() {
           handleSelectSurah(surahList[0]);
         }
       } catch (error) {
-        console.error('Failed to fetch surahs:', error);
+        console.error('Gagal memuat surah:', error);
       } finally {
         setIsLoadingSurahs(false);
       }
@@ -43,7 +43,7 @@ export function QuranBrowser() {
       const surahDetail = await getSurah(surahSummary.number);
       setSelectedSurah(surahDetail);
     } catch (error) {
-      console.error(`Failed to fetch surah ${surahSummary.number}:`, error);
+      console.error(`Gagal memuat surah ${surahSummary.number}:`, error);
     } finally {
       setIsLoadingSurah(false);
     }
@@ -52,7 +52,7 @@ export function QuranBrowser() {
   const handleAddToNotes = (verse: Ayah) => {
     const verseReference = `<h2>Surah ${selectedSurah?.name.transliteration.en} (${selectedSurah?.number}:${verse.number.inSurah})</h2>`;
     const arabicText = `<p style="text-align: right; font-family: 'Amiri Quran', serif; font-size: 1.5rem;">${verse.text.arab}</p>`;
-    const englishTranslation = `<blockquote>${verse.translation.en}</blockquote><p></p>`;
+    const englishTranslation = `<blockquote>${verse.translation.id}</blockquote><p></p>`;
     const noteText = `${verseReference}${arabicText}${englishTranslation}`;
     
     setNotes(prevNotes => prevNotes ? `${prevNotes}${noteText}` : noteText);

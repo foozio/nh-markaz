@@ -33,14 +33,14 @@ export function VerseItem({ verse, surahId, onAddToNotes }: VerseItemProps) {
     setIsLoading(true);
     setSummary('');
     setIsDialogOpen(true);
-    const result = await getVerseSummary(verse.translation.en);
+    const result = await getVerseSummary(verse.translation.id);
     if (result.summary) {
       setSummary(result.summary);
     } else {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: result.error || 'An unknown error occurred.',
+        description: result.error || 'Terjadi kesalahan yang tidak diketahui.',
       });
       setIsDialogOpen(false);
     }
@@ -50,29 +50,27 @@ export function VerseItem({ verse, surahId, onAddToNotes }: VerseItemProps) {
   const handleBookmark = () => {
     setIsBookmarked(!isBookmarked);
     toast({
-      title: isBookmarked ? 'Bookmark removed' : 'Bookmark added',
-      description: `Verse ${surahId}:${verse.number.inSurah} has been ${
-        isBookmarked ? 'removed from' : 'added to'
-      } your bookmarks.`,
+      title: isBookmarked ? 'Penanda dihapus' : 'Penanda ditambahkan',
+      description: `Ayat ${surahId}:${verse.number.inSurah} telah ${
+        isBookmarked ? 'dihapus dari' : 'ditambahkan ke'
+      } penanda Anda.`,
     });
   };
 
   const handlePlayAudio = () => {
-    // Mock audio playback
     toast({
-        title: "Playing Audio",
-        description: `Recitation for verse ${surahId}:${verse.number.inSurah}.`
+        title: "Memutar Audio",
+        description: `Murottal untuk ayat ${surahId}:${verse.number.inSurah}.`
     });
-    // In a real app, you would use a library like howler.js
     try {
       const sound = new Audio(verse.audio.primary);
       sound.play();
     } catch (e) {
-      console.error("Failed to play audio", e);
+      console.error("Gagal memutar audio", e);
       toast({
         variant: 'destructive',
-        title: 'Audio Error',
-        description: 'Could not play audio for this verse.'
+        title: 'Kesalahan Audio',
+        description: 'Tidak dapat memutar audio untuk ayat ini.'
       })
     }
   }
@@ -80,8 +78,8 @@ export function VerseItem({ verse, surahId, onAddToNotes }: VerseItemProps) {
   const handleAddToNotesClick = () => {
     onAddToNotes();
     toast({
-      title: 'Verse Added',
-      description: `Verse ${surahId}:${verse.number.inSurah} has been added to your notes.`,
+      title: 'Ayat Ditambahkan',
+      description: `Ayat ${surahId}:${verse.number.inSurah} telah ditambahkan ke catatan Anda.`,
     });
   }
 
@@ -96,25 +94,24 @@ export function VerseItem({ verse, surahId, onAddToNotes }: VerseItemProps) {
 
       <div className="space-y-4 text-muted-foreground">
         <div className="space-y-2">
-            <p className="text-lg italic text-foreground/80 leading-loose">{verse.translation.en}</p>
-            {verse.translation.id && <p className="font-sans leading-loose">{verse.translation.id}</p>}
+            <p className="text-lg italic text-foreground/80 leading-loose">{verse.translation.id}</p>
         </div>
       </div>
 
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" onClick={handlePlayAudio} aria-label="Play audio">
+        <Button variant="ghost" size="icon" onClick={handlePlayAudio} aria-label="Putar audio">
           <PlayCircle className="h-5 w-5 text-primary/80" />
         </Button>
-        <Button variant="ghost" size="icon" onClick={handleBookmark} aria-label="Bookmark verse">
+        <Button variant="ghost" size="icon" onClick={handleBookmark} aria-label="Tandai ayat">
           <Bookmark className={`h-5 w-5 text-primary/80 transition-colors ${isBookmarked ? 'fill-accent text-accent' : ''}`} />
         </Button>
-        <Button variant="ghost" size="icon" onClick={handleSummarize} aria-label="Summarize with AI">
+        <Button variant="ghost" size="icon" onClick={handleSummarize} aria-label="Ringkas dengan AI">
           <Sparkles className="h-5 w-5 text-accent" />
         </Button>
-         <Button variant="ghost" size="icon" aria-label="Share verse">
+         <Button variant="ghost" size="icon" aria-label="Bagikan ayat">
           <Share2 className="h-5 w-5 text-primary/80" />
         </Button>
-        <Button variant="ghost" size="icon" onClick={handleAddToNotesClick} aria-label="Add to notes">
+        <Button variant="ghost" size="icon" onClick={handleAddToNotesClick} aria-label="Tambah ke catatan">
           <FilePlus className="h-5 w-5 text-primary/80" />
         </Button>
       </div>
@@ -122,16 +119,16 @@ export function VerseItem({ verse, surahId, onAddToNotes }: VerseItemProps) {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="font-headline">AI Summary</DialogTitle>
+            <DialogTitle className="font-headline">Ringkasan AI</DialogTitle>
             <DialogDescription>
-              A concise explanation of verse {`${surahId}:${verse.number.inSurah}`}.
+              Penjelasan singkat tentang ayat {`${surahId}:${verse.number.inSurah}`}.
             </DialogDescription>
           </DialogHeader>
           {isLoading ? (
             <div className="space-y-4 py-4">
                 <div className='flex justify-center items-center gap-2'>
                     <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                    <p className='text-muted-foreground'>Generating summary...</p>
+                    <p className='text-muted-foreground'>Menghasilkan ringkasan...</p>
                 </div>
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-full" />

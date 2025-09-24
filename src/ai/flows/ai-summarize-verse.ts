@@ -14,12 +14,12 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const SummarizeVerseInputSchema = z.object({
-  verseText: z.string().describe('The text content of the Quran verse to be summarized.'),
+  verseText: z.string().describe('Teks terjemahan dari ayat Al-Quran yang akan diringkas.'),
 });
 export type SummarizeVerseInput = z.infer<typeof SummarizeVerseInputSchema>;
 
 const SummarizeVerseOutputSchema = z.object({
-  summary: z.string().describe('A concise summary of the Quran verse.'),
+  summary: z.string().describe('Ringkasan singkat dari ayat Al-Quran.'),
 });
 export type SummarizeVerseOutput = z.infer<typeof SummarizeVerseOutputSchema>;
 
@@ -31,11 +31,11 @@ const summarizeVersePrompt = ai.definePrompt({
   name: 'summarizeVersePrompt',
   input: {schema: SummarizeVerseInputSchema},
   output: {schema: SummarizeVerseOutputSchema},
-  prompt: `You are an AI expert on the Quran. Your task is to provide a concise and accurate summary of the given verse.
+  prompt: `Anda adalah seorang ahli Al-Quran AI. Tugas Anda adalah memberikan ringkasan yang singkat dan akurat dari ayat yang diberikan dalam Bahasa Indonesia.
 
-Verse: {{{verseText}}}
+Ayat: {{{verseText}}}
 
-Summary:`, 
+Ringkasan:`, 
 });
 
 const summarizeVerseFlow = ai.defineFlow(

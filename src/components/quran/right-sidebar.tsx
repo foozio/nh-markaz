@@ -21,18 +21,18 @@ import { RichTextEditor } from './rich-text-editor';
       <aside className="w-[350px] border-l bg-background p-4 flex flex-col">
         <Card className="flex-1 flex flex-col shadow-none border-0">
           <CardHeader>
-            <CardTitle className="font-headline text-xl font-semibold">My Notes</CardTitle>
+            <CardTitle className="font-headline text-xl font-semibold">Catatan Saya</CardTitle>
           </CardHeader>
           <CardContent className="flex-1 flex flex-col p-0">
             {surah ? (
                 <RichTextEditor
                   content={notes}
                   onChange={onNotesChange}
-                  placeholder={`Jot down your reflections on ${surah.name.transliteration.en}...`}
+                  placeholder={`Tuliskan refleksi Anda tentang ${surah.name.transliteration.en}...`}
                 />
             ) : (
               <div className="flex-1 flex items-center justify-center text-center text-sm text-muted-foreground p-4">
-                <p>Select a surah to start taking notes.</p>
+                <p>Pilih surah untuk mulai membuat catatan.</p>
               </div>
             )}
           </CardContent>

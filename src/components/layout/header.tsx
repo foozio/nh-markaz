@@ -42,12 +42,12 @@ export function Header({
           disabled={isLoading || surahs.length === 0}
         >
           <SelectTrigger>
-            <SelectValue placeholder={isLoading ? "Loading Surahs..." : "Select a Surah"} />
+            <SelectValue placeholder={isLoading ? "Memuat Surah..." : "Pilih Surah"} />
           </SelectTrigger>
           <SelectContent>
             {surahs.map((surah) => (
               <SelectItem key={surah.number} value={surah.number.toString()}>
-                {surah.number}. {surah.name.transliteration.en} ({surah.name.translation.en})
+                {surah.number}. {surah.name.transliteration.en} ({surah.name.translation.id})
               </SelectItem>
             ))}
           </SelectContent>

@@ -28,6 +28,7 @@ export interface SurahSummary {
     };
     translation: {
       en: string;
+      id: string;
     };
     long: string;
   };

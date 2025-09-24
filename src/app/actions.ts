@@ -10,7 +10,7 @@ export async function getVerseSummary(verseText: string) {
     return { summary: result.summary, error: null };
   } catch (e) {
     console.error(e);
-    const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
-    return { summary: null, error: `Failed to generate summary: ${errorMessage}` };
+    const errorMessage = e instanceof Error ? e.message : 'Terjadi kesalahan yang tidak diketahui.';
+    return { summary: null, error: `Gagal menghasilkan ringkasan: ${errorMessage}` };
   }
 }

@@ -41,8 +41,8 @@ export function SurahView({ surah, isLoading, onAddToNotes }: SurahViewProps) {
         <div className="text-center flex items-center gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <div>
-            <h2 className="text-2xl font-bold font-headline">Loading Surah...</h2>
-            <p className="text-muted-foreground">Please wait a moment.</p>
+            <h2 className="text-2xl font-bold font-headline">Memuat Surah...</h2>
+            <p className="text-muted-foreground">Silakan tunggu sebentar.</p>
           </div>
         </div>
       </div>
@@ -53,9 +53,9 @@ export function SurahView({ surah, isLoading, onAddToNotes }: SurahViewProps) {
     return (
       <div className="flex h-full items-center justify-center bg-muted/40">
         <div className="text-center">
-          <h2 className="text-2xl font-bold font-headline">Select a Surah</h2>
+          <h2 className="text-2xl font-bold font-headline">Pilih Surah</h2>
           <p className="text-muted-foreground">
-            Choose a Surah from the list to begin reading.
+            Pilih surah dari daftar untuk mulai membaca.
           </p>
         </div>
       </div>
@@ -79,9 +79,9 @@ export function SurahView({ surah, isLoading, onAddToNotes }: SurahViewProps) {
       <div className="flex h-auto flex-shrink-0 items-center justify-between gap-6 border-b p-4 lg:p-6">
         <div className="flex flex-col gap-2">
             <h2 className="font-headline text-2xl font-bold tracking-tight">
-              {surah.name.transliteration.en} - {surah.name.translation.en}
+              {surah.name.transliteration.en} - {surah.name.translation.id}
             </h2>
-            <p className="text-muted-foreground">{surah.numberOfVerses} verses</p>
+            <p className="text-muted-foreground">{surah.numberOfVerses} ayat</p>
         </div>
         <div className="flex items-center justify-end">
             <h1 dir="rtl" className="font-naskh text-4xl font-bold text-primary">
@@ -113,21 +113,21 @@ export function SurahView({ surah, isLoading, onAddToNotes }: SurahViewProps) {
                 variant="outline"
                 onClick={handlePrevPage}
                 disabled={currentPage === 1}
-                aria-label="Previous page"
+                aria-label="Halaman sebelumnya"
             >
                 <ChevronLeft className="h-4 w-4" />
-                <span>Previous</span>
+                <span>Sebelumnya</span>
             </Button>
             <span className="text-sm font-medium text-muted-foreground">
-                Page {currentPage} of {totalPages}
+                Halaman {currentPage} dari {totalPages}
             </span>
             <Button
                 variant="outline"
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
-                aria-label="Next page"
+                aria-label="Halaman berikutnya"
             >
-                <span>Next</span>
+                <span>Berikutnya</span>
                 <ChevronRight className="h-4 w-4" />
             </Button>
         </div>
