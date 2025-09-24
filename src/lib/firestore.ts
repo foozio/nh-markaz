@@ -24,7 +24,7 @@ export async function loadNotes(userId: string): Promise<{ notes?: string; error
     const userNotesRef = doc(db, 'userNotes', userId);
     const docSnap = await getDoc(userNotesRef);
     if (docSnap.exists()) {
-      return { notes: docSnap.data().notes };
+      return { notes: docSnap.data().notes || '' };
     }
     return { notes: '' };
   } catch (error) {
