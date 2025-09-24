@@ -80,7 +80,7 @@ export default function LandingPage() {
       </main>
       <footer className="border-t py-6">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Markaz. Dibuat dengan cinta untuk umat.
+            &copy; {new Date().getFullYear()} Markaz. Dibuat dengan ❤️ untuk kemaslahatan umat.
         </div>
       </footer>
     </div>
