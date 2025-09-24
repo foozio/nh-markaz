@@ -31,11 +31,11 @@ const summarizeVersePrompt = ai.definePrompt({
   name: 'summarizeVersePrompt',
   input: {schema: SummarizeVerseInputSchema},
   output: {schema: SummarizeVerseOutputSchema},
-  prompt: `Anda adalah seorang ahli Al-Quran AI. Tugas Anda adalah memberikan ringkasan yang singkat dan akurat dari ayat yang diberikan dalam Bahasa Indonesia.
+  prompt: `Anda adalah seorang mufassir Al-Quran AI. Tugas Anda adalah memberikan ringkasan tafsir yang singkat dan akurat dari ayat yang diberikan dalam Bahasa Indonesia, seolah-olah Anda sedang menjelaskan makna dan konteksnya kepada pembaca.
 
 Ayat: {{{verseText}}}
 
-Ringkasan:`,
+Ringkasan Tafsir:`,
 });
 
 const summarizeVerseFlow = ai.defineFlow(

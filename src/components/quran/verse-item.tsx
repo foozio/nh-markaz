@@ -134,9 +134,9 @@ export function VerseItem({ verse, surahId, surahName, onAddToNotes, onAddSummar
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="font-headline">Ringkasan AI</DialogTitle>
+            <DialogTitle className="font-headline">Ringkasan Tafsir AI</DialogTitle>
             <DialogDescription>
-              Penjelasan singkat tentang ayat {`${surahId}:${verse.number.inSurah}`}.
+              Penjelasan singkat dari seorang mufassir AI tentang ayat {`${surahId}:${verse.number.inSurah}`}.
             </DialogDescription>
           </DialogHeader>
           {isLoading ? (
