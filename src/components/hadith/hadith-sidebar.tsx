@@ -48,9 +48,13 @@ export function HadithSidebar({
             <CardHeader className="p-0 pb-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="font-headline text-xl font-semibold">Catatan {collectionName}</CardTitle>
-                <Button size="sm" onClick={onSaveNotes} disabled={isSavingNotes || isLoadingNotes || !isAuthenticated}>
-                  {isSavingNotes ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                  Simpan
+                <Button
+                  size="icon"
+                  onClick={onSaveNotes}
+                  disabled={isSavingNotes || isLoadingNotes || !isAuthenticated}
+                  aria-label="Simpan catatan"
+                >
+                  {isSavingNotes ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                 </Button>
               </div>
             </CardHeader>

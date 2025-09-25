@@ -7,11 +7,12 @@ import { loadUserHadithNotes, saveUserHadithNotes } from '@/app/actions';
 import type { HadithEntry } from '@/lib/hadith-api';
 import { HadithItem } from './hadith-item';
 import { HadithSidebar } from './hadith-sidebar';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface HadithReaderProps {
   collectionId: string;
   collectionName: string;
-  range: string;
   hadiths: HadithEntry[];
 }
 
@@ -22,7 +23,7 @@ export interface HadithBookmark {
   excerpt: string;
 }
 
-export function HadithReader({ collectionId, collectionName, range, hadiths }: HadithReaderProps) {
+export function HadithReader({ collectionId, collectionName, hadiths }: HadithReaderProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   const [notes, setNotes] = useState('');
@@ -30,6 +31,16 @@ export function HadithReader({ collectionId, collectionName, range, hadiths }: H
   const [isSavingNotes, setIsSavingNotes] = useState(false);
   const [bookmarks, setBookmarks] = useState<HadithBookmark[]>([]);
   const hadithRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  const listContainerRef = useRef<HTMLDivElement>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pendingScrollNumber, setPendingScrollNumber] = useState<number | null>(null);
+  const hadithsPerPage = 10;
+
+  const totalPages = Math.ceil(hadiths.length / hadithsPerPage);
+  const startIndex = (currentPage - 1) * hadithsPerPage;
+  const endIndex = startIndex + hadithsPerPage;
+  const currentHadiths = hadiths.slice(startIndex, endIndex);
+  const pageRangeLabel = `${startIndex + 1}-${Math.min(endIndex, hadiths.length)}`;
 
   useEffect(() => {
     let mounted = true;
@@ -68,6 +79,25 @@ export function HadithReader({ collectionId, collectionName, range, hadiths }: H
     };
   }, [user, collectionId, toast]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+    setPendingScrollNumber(null);
+  }, [collectionId, hadiths.length]);
+
+  useEffect(() => {
+    if (!listContainerRef.current) return;
+    listContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (pendingScrollNumber === null) return;
+    const targetRef = hadithRefs.current[pendingScrollNumber];
+    if (targetRef) {
+      targetRef.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setPendingScrollNumber(null);
+    }
+  }, [currentHadiths, pendingScrollNumber]);
+
   const addHadithSnippet = (hadith: HadithEntry) => {
     const header = `<h2>${collectionName} - Hadith #${hadith.number}</h2>`;
     const arabic = `<p class="text-right font-naskh text-xl leading-loose" lang="ar" dir="rtl">${hadith.arab}</p>`;
@@ -103,10 +133,13 @@ export function HadithReader({ collectionId, collectionName, range, hadiths }: H
   };
 
   const navigateToBookmark = (bookmark: HadithBookmark) => {
-    const ref = hadithRefs.current[bookmark.number];
-    if (ref) {
-      ref.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    const targetPage = Math.ceil(bookmark.number / hadithsPerPage);
+    setPendingScrollNumber(bookmark.number);
+    setCurrentPage(targetPage);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   const handleSaveNotes = async () => {
@@ -141,9 +174,10 @@ export function HadithReader({ collectionId, collectionName, range, hadiths }: H
 
   return (
     <div className="flex flex-col gap-6 lg:flex-row">
-      <section className="flex-1 space-y-6">
-        {hadiths.map(hadith => (
-          <div
+      <section className="flex-1">
+        <div ref={listContainerRef} className="space-y-6">
+          {currentHadiths.map(hadith => (
+            <div
             key={hadith.number}
             ref={el => {
               hadithRefs.current[hadith.number] = el;
@@ -153,14 +187,75 @@ export function HadithReader({ collectionId, collectionName, range, hadiths }: H
             <HadithItem
               hadith={hadith}
               collectionName={collectionName}
-              range={range}
+              range={pageRangeLabel}
               isBookmarked={bookmarks.some(bookmark => bookmark.collectionId === collectionId && bookmark.number === hadith.number)}
               onToggleBookmark={toggleBookmark}
               onAddToNotes={addHadithSnippet}
               onAddSummaryToNotes={addSummarySnippet}
             />
           </div>
-        ))}
+          ))}
+        </div>
+
+        {totalPages > 1 && (
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-lg border bg-muted/40 px-4 py-3">
+            <div className="text-sm text-muted-foreground">
+              Menampilkan hadith {startIndex + 1}-{Math.min(endIndex, hadiths.length)} dari {hadiths.length}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                aria-label="Halaman sebelumnya"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Sebelumnya
+              </Button>
+
+              <div className="flex items-center gap-1">
+                {Array.from({ length: Math.min(totalPages, 5) }, (_, index) => {
+                  let pageNumber;
+                  if (totalPages <= 5) {
+                    pageNumber = index + 1;
+                  } else if (currentPage <= 3) {
+                    pageNumber = index + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNumber = totalPages - 4 + index;
+                  } else {
+                    pageNumber = currentPage - 2 + index;
+                  }
+
+                  return (
+                    <Button
+                      key={pageNumber}
+                      variant={currentPage === pageNumber ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => handlePageChange(pageNumber)}
+                      className="h-8 w-8 p-0"
+                      aria-label={`Halaman ${pageNumber}`}
+                      aria-current={currentPage === pageNumber ? 'page' : undefined}
+                    >
+                      {pageNumber}
+                    </Button>
+                  );
+                })}
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                aria-label="Halaman selanjutnya"
+              >
+                Selanjutnya
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </section>
 
       <HadithSidebar

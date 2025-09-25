@@ -18,6 +18,10 @@ export interface HadithCollectionDetail extends HadithCollectionSummary {
 }
 
 const API_BASE_URL = 'https://api.hadith.gading.dev';
+const MAX_RANGE_SIZE = 300;
+const RATE_LIMIT_DELAY_MS = 150;
+
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 type ApiResponse<T> = {
   code: number;
@@ -72,4 +76,39 @@ export async function getSingleHadith(collectionId: string, number: number): Pro
   const detail = await getHadiths(collectionId, `${number}-${number}`);
   // When a single number is requested, API still wraps data.hadiths array with length 1
   return detail.hadiths[0];
+}
+
+export async function getCompleteHadithCollection(
+  collectionId: string,
+  totalAvailable?: number,
+): Promise<HadithCollectionDetail> {
+  if (!collectionId) {
+    throw new Error('collectionId is required');
+  }
+
+  const targetTotal = totalAvailable && totalAvailable > 0 ? totalAvailable : null;
+  const initialEnd = targetTotal ? Math.min(targetTotal, MAX_RANGE_SIZE) : MAX_RANGE_SIZE;
+  const initialRangeEnd = Math.max(initialEnd, 1);
+  const initialDetail = await getHadiths(collectionId, `1-${initialRangeEnd}`);
+
+  const available = initialDetail.available;
+  const effectiveTotal = targetTotal ? Math.min(targetTotal, available) : available;
+  const aggregatedHadiths: HadithEntry[] = [...initialDetail.hadiths];
+
+  let fetchedUntil = aggregatedHadiths.length;
+
+  while (fetchedUntil < effectiveTotal) {
+    const start = fetchedUntil + 1;
+    const end = Math.min(start + MAX_RANGE_SIZE - 1, effectiveTotal);
+    await delay(RATE_LIMIT_DELAY_MS);
+    const chunk = await getHadiths(collectionId, `${start}-${end}`);
+    aggregatedHadiths.push(...chunk.hadiths);
+    fetchedUntil = aggregatedHadiths.length;
+  }
+
+  return {
+    ...initialDetail,
+    requested: aggregatedHadiths.length,
+    hadiths: aggregatedHadiths,
+  };
 }
