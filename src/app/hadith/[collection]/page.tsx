@@ -3,20 +3,21 @@ import Link from 'next/link';
 import { HadithReader } from '@/components/hadith/hadith-reader';
 
 interface HadithCollectionPageProps {
-  params: {
+  params: Promise<{
     collection: string;
-  };
+  }>;
 }
 
 export default async function HadithCollectionPage({ params }: HadithCollectionPageProps) {
+  const { collection } = await params;
   const collections = await getHadithCollections();
-  const selectedCollection = collections.find(collection => collection.id === params.collection);
+  const selectedCollection = collections.find(item => item.id === collection);
 
   if (!selectedCollection) {
     throw new Error('Koleksi hadith tidak ditemukan.');
   }
 
-  const detail = await getCompleteHadithCollection(params.collection, selectedCollection.available);
+  const detail = await getCompleteHadithCollection(collection, selectedCollection.available);
 
   return (
     <main className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-10">
@@ -30,7 +31,7 @@ export default async function HadithCollectionPage({ params }: HadithCollectionP
       </header>
 
       <HadithReader
-        collectionId={params.collection}
+        collectionId={collection}
         collectionName={detail.name}
         hadiths={detail.hadiths}
       />
