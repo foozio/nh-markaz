@@ -28,7 +28,7 @@ import { Skeleton } from '../ui/skeleton';
   
   export function RightSidebar({ surah, notes, onNotesChange, bookmarks, onNavigateToVerse, onSaveNotes, isSavingNotes, isLoadingNotes }: RightSidebarProps) {
     return (
-      <aside className="w-[350px] border-l bg-background p-4 flex flex-col">
+      <aside className="h-full w-full md:w-[350px] border-l bg-background p-4 flex flex-col">
         <Tabs defaultValue="notes" className="flex-1 flex flex-col">
             <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="notes">Catatan Saya</TabsTrigger>
@@ -42,13 +42,17 @@ import { Skeleton } from '../ui/skeleton';
                     <CardHeader className='p-0 pb-4'>
                         <div className="flex items-center justify-between">
                              <CardTitle className="font-headline text-xl font-semibold">Catatan Saya</CardTitle>
-                             <Button size="sm" onClick={onSaveNotes} disabled={isSavingNotes || isLoadingNotes}>
+                             <Button
+                                size="icon"
+                                onClick={onSaveNotes}
+                                disabled={isSavingNotes || isLoadingNotes}
+                                aria-label="Simpan catatan"
+                             >
                                 {isSavingNotes ? (
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    <Loader2 className="h-4 w-4 animate-spin" />
                                 ) : (
-                                    <Save className="mr-2 h-4 w-4" />
+                                    <Save className="h-4 w-4" />
                                 )}
-                                Simpan
                             </Button>
                         </div>
                     </CardHeader>
