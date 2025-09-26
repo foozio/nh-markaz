@@ -113,20 +113,20 @@ export function VerseItem({ verse, surahId, surahName, onAddToNotes, onAddSummar
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" onClick={handlePlayAudio} aria-label="Putar audio">
+      <div className="flex items-center gap-2" role="toolbar" aria-label="Verse actions">
+        <Button variant="ghost" size="icon" onClick={handlePlayAudio} aria-label="Putar audio murottal">
           <PlayCircle className="h-5 w-5 text-primary/80" />
         </Button>
-        <Button variant="ghost" size="icon" onClick={handleBookmark} aria-label="Tandai ayat">
+        <Button variant="ghost" size="icon" onClick={handleBookmark} aria-label={isBookmarked ? "Hapus penanda" : "Tandai ayat"}>
           <Bookmark className={`h-5 w-5 text-primary/80 transition-colors ${isBookmarked ? 'fill-accent text-accent' : ''}`} />
         </Button>
-        <Button variant="ghost" size="icon" onClick={handleSummarize} aria-label="Ringkas dengan AI">
+        <Button variant="ghost" size="icon" onClick={handleSummarize} aria-label="Ringkas ayat dengan AI">
           <Sparkles className="h-5 w-5 text-accent" />
         </Button>
          <Button variant="ghost" size="icon" aria-label="Bagikan ayat">
           <Share2 className="h-5 w-5 text-primary/80" />
         </Button>
-        <Button variant="ghost" size="icon" onClick={handleAddToNotesClick} aria-label="Tambah ke catatan">
+        <Button variant="ghost" size="icon" onClick={handleAddToNotesClick} aria-label="Tambah ayat ke catatan">
           <FilePlus className="h-5 w-5 text-primary/80" />
         </Button>
       </div>

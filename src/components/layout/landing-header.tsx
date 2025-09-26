@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { MoonStarIcon } from './quran-header';
+import { MoonStarIcon } from './header';
 
 export function LandingHeader() {
   return (

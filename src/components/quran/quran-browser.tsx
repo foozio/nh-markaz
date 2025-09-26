@@ -6,7 +6,8 @@ import type { Surah, SurahSummary, Ayah, Bookmark } from '@/lib/quran-data';
 import { getSurah, getSurahs } from '@/lib/quran-api';
 import { SurahView } from './surah-view';
 import { RightSidebar } from './right-sidebar';
-import { QuranHeader } from '@/components/layout/quran-header';
+import { MainHeader } from '@/components/layout/main-header';
+import { QuranSectionHeader } from '@/components/layout/quran-section-header';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { loadUserNotes, saveUserNotes } from '@/app/actions';
@@ -101,7 +102,7 @@ export function QuranBrowser() {
 
   const handleAddToNotes = (verse: Ayah) => {
     const verseReference = `<h2>Surah ${selectedSurah?.name.transliteration.en} (${selectedSurah?.number}:${verse.number.inSurah})</h2>`;
-    const arabicText = `<p style="text-align: right; font-family: 'Noto Naskh Arabic', serif; font-size: 1.5rem;">${verse.text.arab}</p>`;
+    const arabicText = `<p class="text-right font-naskh text-2xl leading-relaxed" lang="ar" dir="rtl">${verse.text.arab}</p>`;
     const englishTranslation = `<blockquote>${verse.translation.id}</blockquote><p></p>`;
     const noteText = `${verseReference}${arabicText}${englishTranslation}`;
     
@@ -162,18 +163,19 @@ export function QuranBrowser() {
 
 
   return (
-    <div className="flex h-screen w-full">
+    <div className="flex h-screen w-full flex-col">
+        <MainHeader />
         <main className="flex flex-1 flex-col">
-            <QuranHeader 
+            <QuranSectionHeader
                 surahs={surahs}
                 selectedSurah={selectedSurahSummary}
                 onSelectSurah={handleSelectSurah}
                 isLoading={isLoadingSurahs}
             />
-            <div className="flex flex-1 overflow-hidden">
-                <div className="flex-1 overflow-y-auto">
-                    <SurahView 
-                        surah={selectedSurah} 
+            <div className="flex w-full flex-col md:flex-row">
+                <div className="flex-1" role="region" aria-label="Quran Content">
+                    <SurahView
+                        surah={selectedSurah}
                         isLoading={isLoadingSurah || isLoadingSurahs}
                         onAddToNotes={handleAddToNotes}
                         onAddSummaryToNotes={handleAddSummaryToNotes}
@@ -182,16 +184,18 @@ export function QuranBrowser() {
                         verseRefs={verseRefs}
                     />
                 </div>
-                <RightSidebar 
-                    surah={selectedSurah}
-                    notes={notes}
-                    onNotesChange={setNotes}
-                    bookmarks={bookmarks}
-                    onNavigateToVerse={handleNavigateToVerse}
-                    onSaveNotes={handleSaveNotes}
-                    isSavingNotes={isSavingNotes}
-                    isLoadingNotes={isLoadingNotes}
-                />
+                <div className="hidden md:block">
+                    <RightSidebar
+                        surah={selectedSurah}
+                        notes={notes}
+                        onNotesChange={setNotes}
+                        bookmarks={bookmarks}
+                        onNavigateToVerse={handleNavigateToVerse}
+                        onSaveNotes={handleSaveNotes}
+                        isSavingNotes={isSavingNotes}
+                        isLoadingNotes={isLoadingNotes}
+                    />
+                </div>
             </div>
         </main>
     </div>

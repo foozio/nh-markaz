@@ -1,6 +1,6 @@
 {
   "name": "nh-markaz",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "license": "MIT",
   "repository": {
@@ -61,13 +61,11 @@
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.54.2",
     "recharts": "^2.15.1",
-    "sqlite3": "^5.1.7",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@next/swc-darwin-arm64": "^15.5.4",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
