@@ -28,8 +28,8 @@ import { Skeleton } from '../ui/skeleton';
   
   export function RightSidebar({ surah, notes, onNotesChange, bookmarks, onNavigateToVerse, onSaveNotes, isSavingNotes, isLoadingNotes }: RightSidebarProps) {
     return (
-      <aside className="w-[350px] border-l bg-background p-4 flex flex-col">
-        <Tabs defaultValue="notes" className="flex-1 flex flex-col">
+      <aside className="w-[350px] border-l bg-background p-4 flex flex-col min-h-0 overflow-hidden">
+        <Tabs defaultValue="notes" className="flex-1 flex flex-col min-h-0">
             <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="notes">Catatan Saya</TabsTrigger>
                 <TabsTrigger value="bookmarks">
@@ -37,22 +37,27 @@ import { Skeleton } from '../ui/skeleton';
                     Penanda
                 </TabsTrigger>
             </TabsList>
-            <TabsContent value="notes" className="flex-1 flex flex-col mt-4">
-                <Card className="flex-1 flex flex-col shadow-none border-0">
+            <TabsContent value="notes" className="mt-4 flex flex-1 flex-col min-h-0 overflow-hidden">
+                <Card className="flex flex-1 flex-col shadow-none border-0 min-h-0 overflow-hidden">
                     <CardHeader className='p-0 pb-4'>
                         <div className="flex items-center justify-between">
                              <CardTitle className="font-headline text-xl font-semibold">Catatan Saya</CardTitle>
-                             <Button size="sm" onClick={onSaveNotes} disabled={isSavingNotes || isLoadingNotes}>
+                             <Button
+                               size="sm"
+                               onClick={onSaveNotes}
+                               disabled={isSavingNotes || isLoadingNotes}
+                               aria-label="Simpan catatan"
+                               title="Simpan catatan"
+                             >
                                 {isSavingNotes ? (
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    <Loader2 className="h-4 w-4 animate-spin" />
                                 ) : (
-                                    <Save className="mr-2 h-4 w-4" />
+                                    <Save className="h-4 w-4" />
                                 )}
-                                Simpan
                             </Button>
                         </div>
                     </CardHeader>
-                    <CardContent className="flex-1 flex flex-col p-0">
+                    <CardContent className="flex flex-1 flex-col p-0 min-h-0 overflow-hidden">
                         {isLoadingNotes ? (
                            <div className="space-y-2 flex-1">
                                 <Skeleton className="h-24 w-full" />
@@ -73,12 +78,12 @@ import { Skeleton } from '../ui/skeleton';
                     </CardContent>
                 </Card>
             </TabsContent>
-            <TabsContent value="bookmarks" className="flex-1 flex flex-col mt-4">
-                <Card className="flex-1 flex flex-col shadow-none border-0">
+            <TabsContent value="bookmarks" className="mt-4 flex flex-1 flex-col min-h-0 overflow-hidden">
+                <Card className="flex flex-1 flex-col shadow-none border-0 min-h-0 overflow-hidden">
                     <CardHeader className='p-0 pb-4'>
                         <CardTitle className="font-headline text-xl font-semibold">Penanda Ayat</CardTitle>
                     </CardHeader>
-                    <CardContent className="flex-1 flex flex-col p-0">
+                    <CardContent className="flex flex-1 flex-col p-0 min-h-0 overflow-hidden">
                        <ScrollArea className='h-[400px] rounded-md border'>
                          <div className="p-4">
                             {bookmarks.length > 0 ? (

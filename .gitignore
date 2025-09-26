@@ -48,3 +48,6 @@ firestore-debug.log
 
 # sqlite
 data/
+
+# kilocode documentation
+.kilocode/

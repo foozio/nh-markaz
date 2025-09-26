@@ -5,7 +5,8 @@ NH Markaz is an open-source Quran study assistant built with Next.js. It pairs r
 ## Features
 - Quran browser with translations and rich verse context
 - Secure Google sign-in powered by NextAuth
-- Persistent personal notes stored locally with SQLite
+- Persistent personal notes for Quran and Hadith stored locally with SQLite
+- Experimental hadith collections sourced from api.hadith.gading.dev
 - Optional Gemini integration for AI-assisted summaries
 
 ## Getting Started

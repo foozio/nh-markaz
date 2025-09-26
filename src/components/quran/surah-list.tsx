@@ -40,7 +40,7 @@ export function SurahList({
                     children: (
                       <div className="text-left">
                         <p className="font-bold">{surah.name.transliteration.en}</p>
-                        <p className="text-xs text-muted-foreground">{surah.name.translation.en}</p>
+                        <p className="text-xs text-muted-foreground">{surah.name.translation.id}</p>
                       </div>
                     ),
                     className: "w-40"
@@ -51,15 +51,15 @@ export function SurahList({
                       {surah.number}
                     </span>
                     <div className="flex flex-col items-start">
-                      <span className="font-medium">
-                        {surah.name.transliteration.en}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {surah.name.translation.en}
-                      </span>
+                        <span className="font-medium">
+                          {surah.name.transliteration.en}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {surah.name.translation.id}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <span className="font-mono text-sm">{surah.name.long.split('سُورَةُ ')[1]}</span>
+                    <span className="font-mono text-sm">{surah.name.long.split('سُورَةُ ')[1] || surah.name.long}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}

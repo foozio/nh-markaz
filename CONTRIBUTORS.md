@@ -6,11 +6,11 @@ yourself to the appropriate section below in alphabetical order.
 
 ## Maintainers
 
-- Nuzli Hernawan
+- Nuzli Hernawan (https://www.github.com/foozio | nuzlilatief@gmail.com)
 
 ## Contributors
 
-- Firebase Studio
+- <Your Name>
 
 ## How to be listed
 
