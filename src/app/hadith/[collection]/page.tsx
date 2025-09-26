@@ -1,23 +1,25 @@
-import { getHadiths } from '@/lib/hadith-api';
+import { getHadithCollections, getCompleteHadithCollection } from '@/lib/hadith-api';
 import Link from 'next/link';
 import { HadithReader } from '@/components/hadith/hadith-reader';
 import { MainHeader } from '@/components/layout/main-header';
 import { HadithSectionHeader } from '@/components/layout/hadith-section-header';
 
 interface HadithCollectionPageProps {
-  params: {
+  params: Promise<{
     collection: string;
-  };
-  searchParams: {
-    range?: string;
-  };
+  }>;
 }
 
-const DEFAULT_RANGE = '1-5';
+export default async function HadithCollectionPage({ params }: HadithCollectionPageProps) {
+  const { collection } = await params;
+  const collections = await getHadithCollections();
+  const selectedCollection = collections.find(item => item.id === collection);
 
-export default async function HadithCollectionPage({ params, searchParams }: HadithCollectionPageProps) {
-  const range = searchParams.range || DEFAULT_RANGE;
-  const detail = await getHadiths(params.collection, range);
+  if (!selectedCollection) {
+    throw new Error('Koleksi hadith tidak ditemukan.');
+  }
+
+  const detail = await getCompleteHadithCollection(collection, selectedCollection.available);
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -26,9 +28,8 @@ export default async function HadithCollectionPage({ params, searchParams }: Had
         <HadithSectionHeader selectedCollection={detail.name} />
         <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-10">
           <HadithReader
-            collectionId={params.collection}
+            collectionId={collection}
             collectionName={detail.name}
-            range={range}
             hadiths={detail.hadiths}
           />
 

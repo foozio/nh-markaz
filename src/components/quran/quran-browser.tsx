@@ -166,16 +166,16 @@ export function QuranBrowser() {
     <div className="flex h-screen w-full flex-col">
         <MainHeader />
         <main className="flex flex-1 flex-col">
-            <QuranSectionHeader 
+            <QuranSectionHeader
                 surahs={surahs}
                 selectedSurah={selectedSurahSummary}
                 onSelectSurah={handleSelectSurah}
                 isLoading={isLoadingSurahs}
             />
-            <div className="flex flex-1 overflow-hidden">
-                <div className="flex-1 overflow-y-auto">
-                    <SurahView 
-                        surah={selectedSurah} 
+            <div className="flex w-full flex-col md:flex-row">
+                <div className="flex-1" role="region" aria-label="Quran Content">
+                    <SurahView
+                        surah={selectedSurah}
                         isLoading={isLoadingSurah || isLoadingSurahs}
                         onAddToNotes={handleAddToNotes}
                         onAddSummaryToNotes={handleAddSummaryToNotes}
@@ -184,16 +184,18 @@ export function QuranBrowser() {
                         verseRefs={verseRefs}
                     />
                 </div>
-                <RightSidebar 
-                    surah={selectedSurah}
-                    notes={notes}
-                    onNotesChange={setNotes}
-                    bookmarks={bookmarks}
-                    onNavigateToVerse={handleNavigateToVerse}
-                    onSaveNotes={handleSaveNotes}
-                    isSavingNotes={isSavingNotes}
-                    isLoadingNotes={isLoadingNotes}
-                />
+                <div className="hidden md:block">
+                    <RightSidebar
+                        surah={selectedSurah}
+                        notes={notes}
+                        onNotesChange={setNotes}
+                        bookmarks={bookmarks}
+                        onNavigateToVerse={handleNavigateToVerse}
+                        onSaveNotes={handleSaveNotes}
+                        isSavingNotes={isSavingNotes}
+                        isLoadingNotes={isLoadingNotes}
+                    />
+                </div>
             </div>
         </main>
     </div>
