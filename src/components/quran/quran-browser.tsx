@@ -6,7 +6,8 @@ import type { Surah, SurahSummary, Ayah, Bookmark } from '@/lib/quran-data';
 import { getSurah, getSurahs } from '@/lib/quran-api';
 import { SurahView } from './surah-view';
 import { RightSidebar } from './right-sidebar';
-import { QuranHeader } from '@/components/layout/quran-header';
+import { MainHeader } from '@/components/layout/main-header';
+import { QuranSectionHeader } from '@/components/layout/quran-section-header';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { loadUserNotes, saveUserNotes } from '@/app/actions';
@@ -162,9 +163,10 @@ export function QuranBrowser() {
 
 
   return (
-    <div className="flex h-screen w-full">
+    <div className="flex h-screen w-full flex-col">
+        <MainHeader />
         <main className="flex flex-1 flex-col">
-            <QuranHeader 
+            <QuranSectionHeader 
                 surahs={surahs}
                 selectedSurah={selectedSurahSummary}
                 onSelectSurah={handleSelectSurah}
