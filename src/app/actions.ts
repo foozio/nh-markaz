@@ -2,12 +2,7 @@
 
 import { summarizeVerse, type SummarizeVerseInput } from '@/ai/flows/ai-summarize-verse';
 import { summarizeHadith, type SummarizeHadithInput } from '@/ai/flows/ai-summarize-hadith';
-import {
-  readNotesForUser,
-  writeNotesForUser,
-  readHadithNotesForUser,
-  writeHadithNotesForUser,
-} from '@/lib/firestore';
+import { getUserNote, saveUserNote, type UserNote } from '@/lib/database';
 import { getServerAuthSession } from '@/lib/auth';
 
 async function getAuthenticatedUserId() {
@@ -50,20 +45,31 @@ export async function getHadithSummary(hadithText: string) {
 
 export async function loadUserNotes() {
   const userId = await getAuthenticatedUserId();
-  return readNotesForUser(userId);
+  return getUserNote(userId, 'quran');
 }
 
 export async function saveUserNotes(notes: string) {
   const userId = await getAuthenticatedUserId();
-  return writeNotesForUser(userId, notes);
+  const note: UserNote = {
+    userId,
+    noteType: 'quran',
+    content: notes
+  };
+  return saveUserNote(note);
 }
 
 export async function loadUserHadithNotes(collectionId: string) {
   const userId = await getAuthenticatedUserId();
-  return readHadithNotesForUser(userId, collectionId);
+  return getUserNote(userId, 'hadith', collectionId);
 }
 
 export async function saveUserHadithNotes(collectionId: string, notes: string) {
   const userId = await getAuthenticatedUserId();
-  return writeHadithNotesForUser(userId, collectionId, notes);
+  const note: UserNote = {
+    userId,
+    noteType: 'hadith',
+    content: notes,
+    collectionId
+  };
+  return saveUserNote(note);
 }

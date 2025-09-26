@@ -55,7 +55,7 @@ export function SurahList({
                           {surah.name.transliteration.en}
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          {surah.name.translation.id}
+                          {surah.name.translation.id} • {surah.numberOfVerses || 0} ayat
                         </span>
                       </div>
                     </div>

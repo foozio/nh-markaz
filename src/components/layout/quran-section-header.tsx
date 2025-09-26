@@ -30,25 +30,46 @@ export function QuranSectionHeader({
   };
 
   return (
-    <div className="border-b bg-background/95 px-6 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="border-b bg-gradient-to-r from-background/95 to-background/90 px-6 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="font-headline text-lg font-semibold">Bacaan Quran</h2>
-          <p className="text-sm text-muted-foreground">Pilih surah untuk mulai membaca</p>
+        <div className="space-y-1">
+          <h2 className="font-headline text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+            Al-Qur'an
+          </h2>
+          <p className="text-sm text-muted-foreground font-medium">
+            {selectedSurah 
+              ? `Baca ${selectedSurah.name.transliteration.en} (${selectedSurah.name.translation.id})`
+              : 'Pilih surah untuk mulai membaca'
+            }
+          </p>
         </div>
-        <div className="w-64">
+        
+        <div className="w-72">
           <Select
+            value={selectedSurah?.number.toString() || ''}
             onValueChange={handleValueChange}
-            value={selectedSurah?.number.toString()}
             disabled={isLoading || surahs.length === 0}
           >
-            <SelectTrigger>
-              <SelectValue placeholder={isLoading ? 'Memuat Surah...' : 'Pilih Surah'} />
+            <SelectTrigger className="h-11 border-2 border-border/50 hover:border-primary/50 transition-colors duration-200 bg-background/50 backdrop-blur">
+              <SelectValue 
+                placeholder={isLoading ? 'Memuat Surah...' : 'Pilih Surah'} 
+              />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-[350px] border-2 border-border/50 bg-background/95 backdrop-blur">
               {surahs.map((surah) => (
-                <SelectItem key={surah.number} value={surah.number.toString()}>
-                  {surah.number}. {surah.name.transliteration.en} ({surah.name.translation.id})
+                <SelectItem 
+                  key={surah.number} 
+                  value={surah.number.toString()}
+                  className="hover:bg-primary/10 transition-colors duration-150"
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <span className="font-semibold text-foreground">
+                      {surah.number}. {surah.name.transliteration.en}
+                    </span>
+                    <span className="text-sm text-muted-foreground ml-3 font-medium flex-shrink-0">
+                      ({surah.numberOfVerses || 0} ayat)
+                    </span>
+                  </div>
                 </SelectItem>
               ))}
             </SelectContent>

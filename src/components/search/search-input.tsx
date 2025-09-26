@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -28,6 +28,20 @@ export function SearchInput({
   onSuggestionSelect
 }: SearchInputProps) {
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [textDirection, setTextDirection] = useState<'ltr' | 'rtl'>('ltr');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Function to detect if text contains Arabic characters
+  const detectTextDirection = (text: string): 'ltr' | 'rtl' => {
+    const arabicRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+    return arabicRegex.test(text) ? 'rtl' : 'ltr';
+  };
+
+  // Update text direction when value changes
+  useEffect(() => {
+    const direction = detectTextDirection(value);
+    setTextDirection(direction);
+  }, [value]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +55,10 @@ export function SearchInput({
     const newValue = e.target.value;
     onChange(newValue);
     setShowSuggestions(newValue.length > 0 && suggestions.length > 0);
+    
+    // Update text direction based on input content
+    const direction = detectTextDirection(newValue);
+    setTextDirection(direction);
   };
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -60,12 +78,20 @@ export function SearchInput({
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
+            ref={inputRef}
             type="text"
             value={value}
             onChange={handleInputChange}
             placeholder={placeholder}
-            className="pl-10 pr-10 h-12 text-base font-naskh focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200"
-            dir="rtl"
+            className={cn(
+              "h-12 text-base focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200",
+              textDirection === 'rtl' ? "pl-10 pr-10 font-naskh text-right" : "pl-10 pr-10"
+            )}
+            dir={textDirection}
+            style={{
+              textAlign: textDirection === 'rtl' ? 'right' : 'left',
+              unicodeBidi: 'plaintext'
+            }}
             onFocus={() => setShowSuggestions(value.length > 0 && suggestions.length > 0)}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
           />
@@ -101,9 +127,12 @@ export function SearchInput({
           {suggestions.map((suggestion, index) => (
             <button
               key={index}
-              className="w-full rounded-sm px-3 py-2 text-right text-sm font-naskh hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none"
+              className={cn(
+                "w-full rounded-sm px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none",
+                detectTextDirection(suggestion) === 'rtl' ? "text-right font-naskh" : "text-left"
+              )}
               onClick={() => handleSuggestionClick(suggestion)}
-              dir="rtl"
+              dir={detectTextDirection(suggestion)}
             >
               {suggestion}
             </button>

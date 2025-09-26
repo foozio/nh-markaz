@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { SearchInput } from './search-input';
 import { SearchResults, SearchResult } from './search-results';
-import { getHadithCollections, getHadiths } from '@/lib/hadith-api';
+// Removed direct import of cached-api to avoid client-side SQLite issues
 import type { HadithCollectionSummary, HadithEntry, HadithCollectionDetail } from '@/lib/hadith-api';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,7 +19,6 @@ export function HadithSearch({ onHadithSelect, className }: HadithSearchProps) {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [collections, setCollections] = useState<HadithCollectionSummary[]>([]);
-  const [allHadiths, setAllHadiths] = useState<(HadithEntry & { collectionInfo: HadithCollectionSummary })[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
   const { toast } = useToast();
@@ -30,8 +29,12 @@ export function HadithSearch({ onHadithSelect, className }: HadithSearchProps) {
   useEffect(() => {
     const loadCollections = async () => {
       try {
-        const collectionsData = await getHadithCollections();
-        setCollections(collectionsData);
+        const response = await fetch('/api/hadith/collections');
+        if (!response.ok) {
+          throw new Error('Failed to load hadith collections');
+        }
+        const data = await response.json();
+        setCollections(data.collections || []);
       } catch (error) {
         console.error('Error loading hadith collections:', error);
         toast({
@@ -61,30 +64,9 @@ export function HadithSearch({ onHadithSelect, className }: HadithSearchProps) {
     ).slice(0, 5);
   }, [searchQuery]);
 
-  // Load hadiths from all collections (with pagination to avoid overwhelming the API)
-  const loadAllHadiths = async () => {
-    const allHadithsData: (HadithEntry & { collectionInfo: HadithCollectionSummary })[] = [];
-    
-    // Load a sample from each collection (first 50 hadiths)
-    for (const collection of collections) {
-      try {
-        const hadithData = await getHadiths(collection.id, '1-50');
-        hadithData.hadiths.forEach(hadith => {
-          allHadithsData.push({
-            ...hadith,
-            collectionInfo: collection
-          });
-        });
-      } catch (error) {
-        console.error(`Error loading hadiths from ${collection.name}:`, error);
-      }
-    }
-    
-    setAllHadiths(allHadithsData);
-    return allHadithsData;
-  };
 
-  // Search function
+
+  // Search function using cached API
   const performSearch = async (query: string, page: number = 1) => {
     if (!query.trim()) {
       setSearchResults([]);
@@ -96,63 +78,54 @@ export function HadithSearch({ onHadithSelect, className }: HadithSearchProps) {
     setCurrentPage(page);
 
     try {
-      // Load hadiths if not already loaded
-      let hadithsToSearch = allHadiths;
-      if (hadithsToSearch.length === 0) {
-        hadithsToSearch = await loadAllHadiths();
+      // Use API route for search
+      const response = await fetch(`/api/search/hadith?q=${encodeURIComponent(query)}&cache=true`);
+      
+      if (!response.ok) {
+        throw new Error('Search request failed');
       }
-
-      // Search through hadiths
-      const searchTerm = query.toLowerCase().trim();
-      const matchingHadiths = hadithsToSearch.filter(hadith => {
-        const arabicText = hadith.arab.toLowerCase();
-        const translationText = hadith.id.toLowerCase();
-        
-        return arabicText.includes(searchTerm) ||
-               translationText.includes(searchTerm);
-      });
-
+      
+      const data = await response.json();
+      const cachedResults = data.results || [];
+      
       // Calculate pagination
       const startIndex = (page - 1) * RESULTS_PER_PAGE;
       const endIndex = startIndex + RESULTS_PER_PAGE;
-      const paginatedResults = matchingHadiths.slice(startIndex, endIndex);
+      const paginatedResults = cachedResults.slice(startIndex, endIndex);
 
-      // Convert to SearchResult format
-      const results: SearchResult[] = paginatedResults.map(hadith => {
-        const highlights = [];
+      // Convert cached results to SearchResult format
+      const results: SearchResult[] = paginatedResults.map((result, index) => {
+        const collectionInfo = collections.find(c => c.id === result.collectionId);
         
-        // Find highlighted words
-        if (hadith.arab.toLowerCase().includes(searchTerm)) {
-          // Extract Arabic words that match
-          const arabicWords = hadith.arab.split(' ');
+        // Generate highlights from search query
+        const highlights: string[] = [];
+        const searchTerm = query.toLowerCase().trim();
+        
+        if (result.arabicText.toLowerCase().includes(searchTerm)) {
+          const arabicWords = result.arabicText.split(' ');
           arabicWords.forEach(word => {
             if (word.toLowerCase().includes(searchTerm)) {
               highlights.push(word);
             }
           });
         }
-
-        // Calculate match score based on relevance
-        let matchScore = 0.5;
-        if (hadith.arab.toLowerCase().includes(searchTerm)) matchScore += 0.3;
-        if (hadith.id.toLowerCase().includes(searchTerm)) matchScore += 0.2;
         
         return {
-          id: `${hadith.collectionInfo.id}-${hadith.number}`,
+          id: `${result.collectionId}-${result.hadithNumber}`,
           type: 'hadith' as const,
-          arabicText: hadith.arab,
-          translation: hadith.id,
+          arabicText: result.arabicText,
+          translation: result.translation,
           highlights,
-          matchScore: Math.min(matchScore, 1),
-          hadithId: hadith.number,
-          collection: hadith.collectionInfo.name,
-          narrator: 'Beragam', // Default narrator as API doesn't provide specific narrator info
+          matchScore: 0.8, // Default match score
+          hadithId: result.hadithNumber,
+          collection: collectionInfo?.name || result.collectionId,
+          narrator: 'Beragam', // Default narrator
           grade: 'Sahih' // Default grade
         };
       });
 
       setSearchResults(results);
-      setTotalResults(matchingHadiths.length);
+      setTotalResults(cachedResults.length);
       
     } catch (error) {
       console.error('Search error:', error);

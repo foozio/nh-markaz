@@ -3,11 +3,15 @@
 NH Markaz is an open-source Quran study assistant built with Next.js. It pairs rich Quran browsing with personal note taking and GenAI-powered insights so learners can organise reflections in one place.
 
 ## Features
-- Quran browser with translations and rich verse context
-- Secure Google sign-in powered by NextAuth
-- Persistent personal notes for Quran and Hadith stored locally with SQLite
-- Experimental hadith collections sourced from api.hadith.gading.dev
-- Optional Gemini integration for AI-assisted summaries
+- **Quran & Hadith Browser**: Rich browsing experience with translations and verse context
+- **Advanced Search**: Comprehensive search functionality for Al-Quran and Hadith with Indonesian interface
+- **Multi-language Support**: Search in Arabic, Indonesian, and transliteration with intelligent matching
+- **SQLite Caching**: High-performance caching system for faster search and data retrieval
+- **Secure Authentication**: Google sign-in powered by NextAuth
+- **Personal Notes**: Persistent note-taking for Quran and Hadith with rich text editor
+- **Bookmarking System**: Verse-level bookmarking with audio playback controls
+- **AI Integration**: Optional Gemini-powered summaries and insights
+- **Responsive Design**: Consistent UI across desktop and mobile devices
 
 ## Getting Started
 1. Install dependencies
@@ -33,7 +37,12 @@ The following values are required:
 | `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
 
 ## Database
-The project uses SQLite for storing personal notes. The database file is automatically created at `data/notes.db` and is ignored by Git.
+The project uses SQLite for multiple purposes:
+- **Personal Notes**: User notes and bookmarks stored in `data/notes.db`
+- **Search Cache**: Quran and Hadith content cached in `data/cache.db` for faster search performance
+- **Auto-refresh**: Cache automatically updates to ensure data freshness
+
+All database files are automatically created and ignored by Git for security.
 
 ## Scripts
 - `npm run dev` – start the Next.js dev server on port 9002

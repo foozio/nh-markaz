@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from '@/components/layout/auth-provider';
+import { CacheProvider } from '@/components/providers/cache-provider';
 import { getServerAuthSession } from '@/lib/auth';
 
 export const metadata: Metadata = {
@@ -23,9 +24,11 @@ export default async function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Naskh+Arabic:wght@400..700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <AuthProvider session={session}>
-            {children}
-        </AuthProvider>
+        <CacheProvider>
+          <AuthProvider session={session}>
+              {children}
+          </AuthProvider>
+        </CacheProvider>
         <Toaster />
       </body>
     </html>
