@@ -58,7 +58,7 @@ export function QuranHeader({
   }
 
   return (
-    <header className="flex h-16 items-center justify-between border-b bg-background/95 px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 flex h-16 items-center justify-between border-b bg-background/95 px-6 pt-4 pb-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex items-center gap-3">
         <MoonStarIcon className="h-6 w-6 text-primary" />
         <h1 className="font-headline text-2xl font-bold text-primary">
@@ -78,7 +78,14 @@ export function QuranHeader({
             <SelectContent>
                 {surahs.map((surah) => (
                 <SelectItem key={surah.number} value={surah.number.toString()}>
-                    {surah.number}. {surah.name.transliteration.en} ({surah.name.translation.id})
+                  <div className="flex items-center justify-between w-full">
+                    <span>
+                      {surah.number}. {surah.name.transliteration.en}
+                    </span>
+                    <span className="text-sm text-muted-foreground ml-3 flex-shrink-0">
+                      ({surah.numberOfVerses || 0} ayat)
+                    </span>
+                  </div>
                 </SelectItem>
                 ))}
             </SelectContent>

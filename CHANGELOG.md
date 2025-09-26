@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Fixed ReferenceError: getCachedSearchResults is not defined by migrating cached API functions to server-side routes
+- Standardized header spacing consistency across all pages (Quran, Hadith, Search)
+- Fixed Quran dropdown to properly display verse count for all surahs
+- Improved search architecture by separating client-side components from server-side database operations
+- Enhanced SQLite caching mechanism for better performance and reliability
+
 ## [0.2.0] - 2025-01-27
 
 ### Added

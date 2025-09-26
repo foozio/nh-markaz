@@ -27,11 +27,13 @@ export function HadithSectionHeader({
   const isCollectionPage = pathname?.includes('/hadith/') && pathname !== '/hadith';
 
   return (
-    <div className="border-b bg-background/95 px-6 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="border-b bg-gradient-to-r from-background/95 to-background/90 px-6 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="font-headline text-lg font-semibold">Koleksi Hadith</h2>
-          <p className="text-sm text-muted-foreground">
+        <div className="space-y-1">
+          <h2 className="font-headline text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+            Koleksi Hadith
+          </h2>
+          <p className="text-sm text-muted-foreground font-medium">
             {isCollectionPage 
               ? 'Baca hadith dari koleksi yang dipilih'
               : 'Pilih koleksi hadith untuk mulai membaca'
@@ -40,26 +42,42 @@ export function HadithSectionHeader({
         </div>
         
         {isCollectionPage ? (
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" asChild>
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              asChild
+              className="border-2 border-border/50 hover:border-primary/50 transition-colors duration-200 bg-background/50 backdrop-blur font-medium"
+            >
               <Link href="/hadith">← Kembali ke Koleksi</Link>
             </Button>
             {selectedCollection && (
-              <div className="text-sm font-medium text-muted-foreground">
+              <div className="text-sm font-semibold text-muted-foreground bg-muted/30 px-3 py-1.5 rounded-md border border-border/30">
                 Koleksi: {selectedCollection}
               </div>
             )}
           </div>
         ) : (
-          <div className="w-64">
+          <div className="w-72">
             <Select disabled={isLoading || collections.length === 0}>
-              <SelectTrigger>
+              <SelectTrigger className="h-11 border-2 border-border/50 hover:border-primary/50 transition-colors duration-200 bg-background/50 backdrop-blur">
                 <SelectValue placeholder={isLoading ? 'Memuat Koleksi...' : 'Pilih dari daftar di bawah'} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-[350px] border-2 border-border/50 bg-background/95 backdrop-blur">
                 {collections.map((collection) => (
-                  <SelectItem key={collection.id} value={collection.id}>
-                    {collection.name} ({collection.available} hadith)
+                  <SelectItem 
+                    key={collection.id} 
+                    value={collection.id}
+                    className="hover:bg-primary/10 transition-colors duration-150"
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <span className="font-semibold text-foreground">
+                        {collection.name}
+                      </span>
+                      <span className="text-sm text-muted-foreground ml-3 font-medium">
+                        ({collection.available} hadith)
+                      </span>
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>

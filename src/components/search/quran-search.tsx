@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { SearchInput } from './search-input';
 import { SearchResults, SearchResult } from './search-results';
-import { getSurahs, getSurah } from '@/lib/quran-api';
+// Removed direct import of cached-api to avoid client-side SQLite issues
 import type { SurahSummary, Surah, Ayah } from '@/lib/quran-data';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,7 +19,6 @@ export function QuranSearch({ onVerseSelect, className }: QuranSearchProps) {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [surahs, setSurahs] = useState<SurahSummary[]>([]);
-  const [allVerses, setAllVerses] = useState<(Ayah & { surahInfo: SurahSummary })[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
   const { toast } = useToast();
@@ -30,8 +29,12 @@ export function QuranSearch({ onVerseSelect, className }: QuranSearchProps) {
   useEffect(() => {
     const loadSurahs = async () => {
       try {
-        const surahsData = await getSurahs();
-        setSurahs(surahsData);
+        const response = await fetch('/api/surahs');
+        if (!response.ok) {
+          throw new Error('Failed to load surahs');
+        }
+        const data = await response.json();
+        setSurahs(data.surahs || []);
       } catch (error) {
         console.error('Error loading surahs:', error);
         toast({
@@ -61,7 +64,7 @@ export function QuranSearch({ onVerseSelect, className }: QuranSearchProps) {
     ).slice(0, 5);
   }, [searchQuery]);
 
-  // Search function
+  // Search function using cached API
   const performSearch = async (query: string, page: number = 1) => {
     if (!query.trim()) {
       setSearchResults([]);
@@ -73,81 +76,56 @@ export function QuranSearch({ onVerseSelect, className }: QuranSearchProps) {
     setCurrentPage(page);
 
     try {
-      // If we don't have all verses loaded, load them
-      if (allVerses.length === 0) {
-        const allVersesData: (Ayah & { surahInfo: SurahSummary })[] = [];
-        
-        for (const surahSummary of surahs) {
-          try {
-            const surah = await getSurah(surahSummary.number);
-            surah.verses.forEach(verse => {
-              allVersesData.push({
-                ...verse,
-                surahInfo: surahSummary
-              });
-            });
-          } catch (error) {
-            console.error(`Error loading surah ${surahSummary.number}:`, error);
-          }
-        }
-        
-        setAllVerses(allVersesData);
+      // Use API route for search
+      const response = await fetch(`/api/search/quran?q=${encodeURIComponent(query)}&cache=true`);
+      
+      if (!response.ok) {
+        throw new Error('Search request failed');
       }
-
-      // Search through verses
-      const searchTerm = query.toLowerCase().trim();
-      const matchingVerses = (allVerses.length > 0 ? allVerses : []).filter(verse => {
-        const arabicText = verse.text.arab.toLowerCase();
-        const translationEn = verse.translation.en.toLowerCase();
-        const translationId = verse.translation.id.toLowerCase();
-        const transliteration = verse.text.transliteration.en.toLowerCase();
-        
-        return arabicText.includes(searchTerm) ||
-               translationEn.includes(searchTerm) ||
-               translationId.includes(searchTerm) ||
-               transliteration.includes(searchTerm);
-      });
-
+      
+      const data = await response.json();
+      const cachedResults = data.results || [];
+      
       // Calculate pagination
       const startIndex = (page - 1) * RESULTS_PER_PAGE;
       const endIndex = startIndex + RESULTS_PER_PAGE;
-      const paginatedResults = matchingVerses.slice(startIndex, endIndex);
+      const paginatedResults = cachedResults.slice(startIndex, endIndex);
 
-      // Convert to SearchResult format
-      const results: SearchResult[] = paginatedResults.map(verse => {
-        const highlights = [];
+      // Convert cached results to SearchResult format
+      const results: SearchResult[] = paginatedResults.map((result, index) => {
+        const surahInfo = surahs.find(s => s.number === result.surahNumber);
         
-        // Find highlighted words
-        if (verse.text.arab.toLowerCase().includes(searchTerm)) {
-          // Extract Arabic words that match
-          const arabicWords = verse.text.arab.split(' ');
+        // Generate highlights from search query
+        const highlights: string[] = [];
+        const searchTerm = query.toLowerCase().trim();
+        
+        if (result.arabicText.toLowerCase().includes(searchTerm)) {
+          const arabicWords = result.arabicText.split(' ');
           arabicWords.forEach(word => {
             if (word.toLowerCase().includes(searchTerm)) {
               highlights.push(word);
             }
           });
         }
-
-        // Calculate match score based on relevance
-        let matchScore = 0.5;
-        if (verse.text.arab.toLowerCase().includes(searchTerm)) matchScore += 0.3;
-        if (verse.translation.id.toLowerCase().includes(searchTerm)) matchScore += 0.2;
         
         return {
-          id: `${verse.surahInfo.number}-${verse.number.inSurah}`,
+          id: `${result.surahNumber}-${result.verseNumber}`,
           type: 'quran' as const,
-          arabicText: verse.text.arab,
-          translation: verse.translation.id,
+          arabicText: result.arabicText,
+          translation: result.translation,
+          transliteration: result.transliteration || '',
           highlights,
-          matchScore: Math.min(matchScore, 1),
-          surahId: verse.surahInfo.number,
-          surahName: verse.surahInfo.name.transliteration.en,
-          ayahNumber: verse.number.inSurah
+          matchScore: 0.8, // Default match score
+          surahNumber: result.surahNumber,
+          surahName: surahInfo?.name.transliteration.id || `Surah ${result.surahNumber}`,
+          verseNumber: result.verseNumber,
+          juz: result.juz || 1,
+          page: result.page || 1
         };
       });
 
       setSearchResults(results);
-      setTotalResults(matchingVerses.length);
+      setTotalResults(cachedResults.length);
       
     } catch (error) {
       console.error('Search error:', error);
@@ -171,8 +149,8 @@ export function QuranSearch({ onVerseSelect, className }: QuranSearchProps) {
   };
 
   const handleResultClick = (result: SearchResult) => {
-    if (result.surahId && result.ayahNumber) {
-      onVerseSelect?.(result.surahId, result.ayahNumber);
+    if (result.surahNumber && result.verseNumber) {
+      onVerseSelect?.(result.surahNumber, result.verseNumber);
     }
   };
 

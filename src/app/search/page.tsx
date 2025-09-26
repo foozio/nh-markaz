@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { QuranSearch } from '@/components/search/quran-search';
 import { HadithSearch } from '@/components/search/hadith-search';
+import { MainHeader } from '@/components/layout/main-header';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Search, BookOpen, FileText } from 'lucide-react';
@@ -23,7 +24,10 @@ export default function SearchPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-6xl">
+    <div className="flex h-screen w-full flex-col">
+      <MainHeader />
+      <main className="flex-1 overflow-auto">
+        <div className="container mx-auto px-4 py-6 max-w-6xl">
       {/* Page Header */}
       <div className="mb-8 text-center">
         <div className="flex items-center justify-center gap-3 mb-4">
@@ -101,6 +105,8 @@ export default function SearchPage() {
           </div>
         </CardContent>
       </Card>
+        </div>
+      </main>
     </div>
   );
 }
