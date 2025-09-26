@@ -87,8 +87,14 @@ body {
     @apply bg-background text-foreground;
   }
   .prose {
+    h1 {
+      @apply text-2xl font-bold font-headline;
+    }
     h2 {
       @apply text-xl font-bold font-headline;
+    }
+    h3 {
+      @apply text-lg font-bold font-headline;
     }
   }
 }

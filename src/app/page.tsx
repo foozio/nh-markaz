@@ -30,7 +30,7 @@ export default function LandingPage() {
                         Selamat Datang di Markaz
                     </h1>
                     <p className="mx-auto mt-6 max-w-2xl text-lg text-foreground/80">
-                        Mitra Belajar Quran Anda
+                        Mitra Belajar Quran dan Hadith Anda
                     </p>
                     <div className="mt-10 flex items-center justify-center gap-x-6">
                         <Button asChild size="lg">
@@ -48,10 +48,10 @@ export default function LandingPage() {
                         Fitur Unggulan Kami
                     </h2>
                     <p className="mt-4 text-lg text-muted-foreground">
-                        Semua yang Anda butuhkan untuk pengalaman membaca Quran yang mendalam.
+                        Semua yang Anda butuhkan untuk pengalaman membaca Quran dan Hadith yang mendalam.
                     </p>
                 </div>
-                <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+                <div className="mx-auto mt-16 grid max-w-4xl grid-cols-1 gap-8 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-4">
                     <div className="flex flex-col items-center gap-y-4 rounded-xl bg-card p-8 shadow-sm">
                         <CheckCircle className="h-10 w-10 text-primary" />
                         <h3 className="text-lg font-semibold leading-7 text-card-foreground">Bacaan Quran Lengkap</h3>
@@ -61,9 +61,16 @@ export default function LandingPage() {
                     </div>
                     <div className="flex flex-col items-center gap-y-4 rounded-xl bg-card p-8 shadow-sm">
                         <CheckCircle className="h-10 w-10 text-primary" />
+                        <h3 className="text-lg font-semibold leading-7 text-card-foreground">Koleksi Hadith</h3>
+                        <p className="text-center text-sm leading-6 text-card-foreground/80">
+                            Jelajahi berbagai koleksi hadith shahih dari sumber terpercaya untuk memperdalam pemahaman.
+                        </p>
+                    </div>
+                    <div className="flex flex-col items-center gap-y-4 rounded-xl bg-card p-8 shadow-sm">
+                        <CheckCircle className="h-10 w-10 text-primary" />
                         <h3 className="text-lg font-semibold leading-7 text-card-foreground">Ringkasan AI</h3>
                         <p className="text-center text-sm leading-6 text-card-foreground/80">
-                            Dapatkan pemahaman mendalam tentang setiap ayat dengan ringkasan yang dihasilkan oleh AI.
+                            Dapatkan pemahaman mendalam tentang setiap ayat dan hadith dengan ringkasan yang dihasilkan oleh AI.
                         </p>
                     </div>
                     <div className="flex flex-col items-center gap-y-4 rounded-xl bg-card p-8 shadow-sm">
