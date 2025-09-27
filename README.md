@@ -7,7 +7,7 @@ NH Markaz is an open-source Quran study assistant built with Next.js. It pairs r
 - **Advanced Search**: Comprehensive search functionality for Al-Quran and Hadith with Indonesian interface
 - **Multi-language Support**: Search in Arabic, Indonesian, and transliteration with intelligent matching
 - **SQLite Caching**: High-performance caching system for faster search and data retrieval
-- **Secure Authentication**: Google sign-in powered by NextAuth
+- **Secure Authentication**: Google sign-in powered by Supabase Auth
 - **Personal Notes**: Persistent note-taking for Quran and Hadith with rich text editor
 - **Bookmarking System**: Verse-level bookmarking with audio playback controls
 - **AI Integration**: Optional Gemini-powered summaries and insights
@@ -31,10 +31,10 @@ The following values are required:
 | Variable | Description |
 | --- | --- |
 | `GEMINI_API_KEY` | Google Gemini API key (optional if you disable AI features) |
-| `NEXTAUTH_URL` | Base URL used by NextAuth callbacks (e.g. `http://localhost:9002`) |
-| `NEXTAUTH_SECRET` | Strong random string for signing NextAuth JWTs |
-| `GOOGLE_CLIENT_ID` | Google OAuth client ID |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
+| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Your Supabase service role key |
+| `GEMINI_API_KEY` | Google Gemini API key for AI features |
 
 ## Database
 The project uses SQLite for multiple purposes:

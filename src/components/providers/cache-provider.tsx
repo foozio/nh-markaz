@@ -8,8 +8,7 @@ interface CacheProviderProps {
 
 export function CacheProvider({ children }: CacheProviderProps) {
   useEffect(() => {
-    // Cache initialization will be handled by individual components when needed
-    console.log('Cache provider initialized');
+    // Cache provider initialized
   }, []);
 
   return <>{children}</>;

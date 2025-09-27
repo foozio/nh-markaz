@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getCachedSurahs } from '@/lib/cached-api';
+import { getSurahs } from '@/lib/quran-api';
 
 export async function GET() {
   try {
-    const surahs = await getCachedSurahs();
+    const surahs = await getSurahs();
     
     return NextResponse.json({
       success: true,

@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getCachedHadithCollections } from '@/lib/cached-api';
+import { getHadithCollections } from '@/lib/hadith-api';
 
 export async function GET() {
   try {
-    const collections = await getCachedHadithCollections();
+    const collections = await getHadithCollections();
     
     return NextResponse.json({
       success: true,

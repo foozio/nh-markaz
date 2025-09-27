@@ -112,3 +112,20 @@ export async function getCompleteHadithCollection(
     hadiths: aggregatedHadiths,
   };
 }
+
+export interface HadithSearchResult {
+  collectionId: string;
+  hadithNumber: number;
+  arabicText: string;
+  translation: string;
+  narrator: string;
+  grade: string;
+}
+
+export async function searchHadith(query: string): Promise<HadithSearchResult[]> {
+  // This is a basic implementation - in a real app you'd want a proper search API
+  // For now, we'll return an empty array as the search functionality would need
+  // a dedicated search service or database
+  // TODO: Implement actual search functionality
+  return [];
+}

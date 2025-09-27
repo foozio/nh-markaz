@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchQuranWithCache } from '@/lib/cached-api';
+import { searchQuran } from '@/lib/quran-api';
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const results = await searchQuranWithCache(query, useCache);
+    const results = await searchQuran(query);
     
     return NextResponse.json({
       success: true,

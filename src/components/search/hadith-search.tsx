@@ -7,7 +7,8 @@ import { SearchResults, SearchResult } from './search-results';
 import type { HadithCollectionSummary, HadithEntry, HadithCollectionDetail } from '@/lib/hadith-api';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { File } from 'lucide-react/icons';
+import * as LucideReact from 'lucide-react';
+const { File } = LucideReact as any;
 
 interface HadithSearchProps {
   onHadithSelect?: (collectionId: string, hadithNumber: number) => void;

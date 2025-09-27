@@ -1,15 +1,22 @@
 
 'use client';
 
-import React, { createContext, useEffect } from 'react';
-import { SessionProvider, useSession } from 'next-auth/react';
-import type { Session } from 'next-auth';
+import React, { createContext, useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import type { User } from '@supabase/supabase-js';
+
+// Extended user type with display properties
+export interface ExtendedUser extends User {
+  name?: string;
+  image?: string;
+}
 
 export interface AuthContextType {
-  user: Session['user'] | null;
+  user: ExtendedUser | null;
   loading: boolean;
+  signOut: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -17,23 +24,62 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 const publicRoutes = ['/', '/login'];
 
 function AuthStateGate({ children }: { children: React.ReactNode }) {
-  const { data: session, status } = useSession();
+  const [user, setUser] = useState<ExtendedUser | null>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
-  const isPublicRoute = publicRoutes.includes(pathname);
+  const isPublicRoute = pathname ? publicRoutes.includes(pathname) : false;
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    router.push('/login');
+  };
 
   useEffect(() => {
-    if (status === 'loading') return;
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        const extendedUser: ExtendedUser = {
+          ...session.user,
+          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
+          image: session.user.user_metadata?.avatar_url || null
+        };
+        setUser(extendedUser);
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
 
-    if (!session && !isPublicRoute) {
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        const extendedUser: ExtendedUser = {
+          ...session.user,
+          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
+          image: session.user.user_metadata?.avatar_url || null
+        };
+        setUser(extendedUser);
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (loading) return;
+
+    if (!user && !isPublicRoute) {
       router.push('/login');
-    } else if (session && (pathname === '/login' || pathname === '/')) {
+    } else if (user && (pathname === '/login' || pathname === '/')) {
       router.push('/quran');
     }
-  }, [session, status, pathname, router, isPublicRoute]);
-
-  const loading = status === 'loading';
-  const user = session?.user ?? null;
+  }, [user, loading, pathname, router, isPublicRoute]);
 
   if (loading || (!user && !isPublicRoute) || (user && isPublicRoute)) {
     return (
@@ -50,16 +96,12 @@ function AuthStateGate({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, loading, signOut }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-export function AuthProvider({ children, session }: { children: React.ReactNode; session: Session | null }) {
-  return (
-    <SessionProvider session={session}>
-      <AuthStateGate>{children}</AuthStateGate>
-    </SessionProvider>
-  );
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  return <AuthStateGate>{children}</AuthStateGate>;
 }

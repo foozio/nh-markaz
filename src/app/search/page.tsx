@@ -6,7 +6,8 @@ import { HadithSearch } from '@/components/search/hadith-search';
 import { MainHeader } from '@/components/layout/main-header';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Search, BookOpen, FileText } from 'lucide-react/icons';
+import * as LucideReact from 'lucide-react';
+const { Search, BookOpen, FileText } = LucideReact as any;
 import { useRouter } from 'next/navigation';
 
 export default function SearchPage() {

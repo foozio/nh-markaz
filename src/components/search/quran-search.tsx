@@ -7,7 +7,8 @@ import { SearchResults, SearchResult } from './search-results';
 import type { SurahSummary, Surah, Ayah } from '@/lib/quran-data';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Book } from 'lucide-react/icons';
+import * as LucideReact from 'lucide-react';
+const { Book } = LucideReact as any;
 
 interface QuranSearchProps {
   onVerseSelect?: (surahNumber: number, verseNumber: number) => void;

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchHadithWithCache } from '@/lib/cached-api';
+import { searchHadith } from '@/lib/hadith-api';
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const results = await searchHadithWithCache(query, useCache);
+    const results = await searchHadith(query);
     
     return NextResponse.json({
       success: true,

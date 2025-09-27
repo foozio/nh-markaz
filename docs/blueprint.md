@@ -8,7 +8,7 @@
 - Rich Note-Taking: Capture reflections for Quran and Hadith in a rich text editor, stored per-user via SQLite.
 - AI-Powered Summaries: Generate concise Indonesian summaries for selected verses using Gemini.
 - Hadith Explorer: Surface curated hadith collections from api.hadith.gading.dev (in progress).
-- Google Sign-In: Authenticate readers securely with NextAuth + Google OAuth.
+- Google Sign-In: Authenticate readers securely with Supabase Auth + Google OAuth.
 
 ## Style Guidelines:
 

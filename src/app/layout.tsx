@@ -3,19 +3,18 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from '@/components/layout/auth-provider';
 import { CacheProvider } from '@/components/providers/cache-provider';
-import { getServerAuthSession } from '@/lib/auth';
+
 
 export const metadata: Metadata = {
   title: 'Markaz',
   description: 'Aplikasi Quran yang indah dan elegan untuk bacaan dan studi spiritual.',
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerAuthSession();
   return (
     <html lang="id" suppressHydrationWarning>
       <head>
@@ -25,7 +24,7 @@ export default async function RootLayout({
       </head>
       <body className="font-body antialiased">
         <CacheProvider>
-          <AuthProvider session={session}>
+          <AuthProvider>
               {children}
           </AuthProvider>
         </CacheProvider>

@@ -10,7 +10,6 @@ import {
 } from '@/components/ui/select';
 import type { SurahSummary } from '@/lib/quran-data';
 import { useAuth } from '@/hooks/use-auth';
-import { signOut } from 'next-auth/react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import {
     DropdownMenu,
@@ -37,9 +36,11 @@ export function QuranHeader({
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/login' });
-    toast({
+ const { signOut } = useAuth();
+    
+    const handleSignOut = async () => {
+        await signOut();
+        toast({
         title: "Logout Berhasil",
         description: "Anda telah berhasil keluar.",
     });

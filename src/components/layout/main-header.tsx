@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
-import { signOut } from 'next-auth/react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import {
   DropdownMenu,
@@ -14,7 +13,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { LogOut, BookOpen, Scroll, Search } from 'lucide-react/icons';
+import * as LucideReact from 'lucide-react';
+const { LogOut, BookOpen, Scroll, Search } = LucideReact as any;
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -23,9 +23,11 @@ export function MainHeader() {
   const { toast } = useToast();
   const pathname = usePathname();
 
-  const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/login' });
-    toast({
+ const { signOut } = useAuth();
+    
+    const handleSignOut = async () => {
+        await signOut();
+        toast({
       title: 'Logout Berhasil',
       description: 'Anda telah berhasil keluar.',
     });

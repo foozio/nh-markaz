@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, X } from 'lucide-react/icons';
+import * as LucideReact from 'lucide-react';
+const { Search, X } = LucideReact as any;
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';

@@ -41,3 +41,19 @@ export async function getSurah(surahNumber: number): Promise<Surah> {
     const surahData = await fetchFromApi<Surah>(`/surah/${surahNumber}`);
     return surahData;
 }
+
+export interface QuranSearchResult {
+  surahNumber: number;
+  verseNumber: number;
+  arabicText: string;
+  translation: string;
+  surahName: string;
+}
+
+export async function searchQuran(query: string): Promise<QuranSearchResult[]> {
+  // This is a basic implementation - in a real app you'd want a proper search API
+  // For now, we'll return an empty array as the search functionality would need
+  // a dedicated search service or database
+  // TODO: Implement actual search functionality
+  return [];
+}

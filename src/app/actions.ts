@@ -2,21 +2,32 @@
 
 import { summarizeVerse, type SummarizeVerseInput } from '@/ai/flows/ai-summarize-verse';
 import { summarizeHadith, type SummarizeHadithInput } from '@/ai/flows/ai-summarize-hadith';
-import { getUserNote, saveUserNote, type UserNote } from '@/lib/database';
-import { getServerAuthSession } from '@/lib/auth';
+import { loadNotes, saveNotes, loadHadithNotes, saveHadithNotes } from '@/lib/firestore';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 async function getAuthenticatedUserId() {
-  const session = await getServerAuthSession();
-  if (!session?.user) {
+  const cookieStore = await cookies();
+  
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+      },
+    }
+  );
+
+  const { data: { user }, error } = await supabase.auth.getUser();
+  
+  if (error || !user) {
     throw new Error('Anda harus masuk untuk mengakses catatan.');
   }
 
-  const identifier = session.user.email || session.user.id;
-  if (!identifier) {
-    throw new Error('Profil pengguna tidak memiliki identitas unik.');
-  }
-
-  return identifier;
+  return user.id;
 }
 
 export async function getVerseSummary(verseText: string) {
@@ -45,31 +56,20 @@ export async function getHadithSummary(hadithText: string) {
 
 export async function loadUserNotes() {
   const userId = await getAuthenticatedUserId();
-  return getUserNote(userId, 'quran');
+  return loadNotes(userId);
 }
 
 export async function saveUserNotes(notes: string) {
   const userId = await getAuthenticatedUserId();
-  const note: UserNote = {
-    userId,
-    noteType: 'quran',
-    content: notes
-  };
-  return saveUserNote(note);
+  return saveNotes(userId, notes);
 }
 
 export async function loadUserHadithNotes(collectionId: string) {
   const userId = await getAuthenticatedUserId();
-  return getUserNote(userId, 'hadith', collectionId);
+  return loadHadithNotes(userId, collectionId);
 }
 
 export async function saveUserHadithNotes(collectionId: string, notes: string) {
   const userId = await getAuthenticatedUserId();
-  const note: UserNote = {
-    userId,
-    noteType: 'hadith',
-    content: notes,
-    collectionId
-  };
-  return saveUserNote(note);
+  return saveHadithNotes(userId, collectionId, notes);
 }

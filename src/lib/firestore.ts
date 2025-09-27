@@ -1,19 +1,71 @@
 'use server';
 
-import { saveUserNote, getUserNote, type UserNote } from './database';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
-async function saveNotes(userId: string, notes: string) {
-  const note: UserNote = {
-    userId,
-    noteType: 'quran',
-    content: notes
-  };
+type UserNote = {
+  userId: string;
+  noteType: 'quran' | 'hadith';
+  content: string;
+  collectionId?: string;
+};
+
+async function createSupabaseServerClient() {
+  const cookieStore = await cookies();
   
-  return saveUserNote(note);
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+      },
+    }
+  );
 }
 
-async function loadNotes(userId: string): Promise<{ notes?: string; error?: string }> {
-  return getUserNote(userId, 'quran');
+export async function saveNotes(userId: string, notes: string) {
+  const supabase = await createSupabaseServerClient();
+  
+  const { error } = await supabase
+    .from('user_notes')
+    .upsert({
+      user_id: userId,
+      note_type: 'quran',
+      content: notes,
+      updated_at: new Date().toISOString()
+    }, {
+      onConflict: 'user_id,note_type'
+    });
+  
+  if (error) {
+    return { error: error.message };
+  }
+  
+  return { success: true };
+}
+
+export async function loadNotes(userId: string): Promise<{ notes?: string; error?: string }> {
+  const supabase = await createSupabaseServerClient();
+  
+  const { data, error } = await supabase
+    .from('user_notes')
+    .select('content')
+    .eq('user_id', userId)
+    .eq('note_type', 'quran')
+    .single();
+  
+  if (error) {
+    if (error.code === 'PGRST116') {
+      // No rows found
+      return { notes: '' };
+    }
+    return { error: error.message };
+  }
+  
+  return { notes: data?.content || '' };
 }
 
 export async function writeNotesForUser(userId: string, notes: string) {
@@ -24,19 +76,48 @@ export async function readNotesForUser(userId: string) {
   return loadNotes(userId);
 }
 
-async function saveHadithNotes(userId: string, collectionId: string, notes: string) {
-  const note: UserNote = {
-    userId,
-    noteType: 'hadith',
-    content: notes,
-    collectionId
-  };
+export async function saveHadithNotes(userId: string, collectionId: string, notes: string) {
+  const supabase = await createSupabaseServerClient();
   
-  return saveUserNote(note);
+  const { error } = await supabase
+    .from('user_notes')
+    .upsert({
+      user_id: userId,
+      note_type: 'hadith',
+      content: notes,
+      collection_id: collectionId,
+      updated_at: new Date().toISOString()
+    }, {
+      onConflict: 'user_id,note_type,collection_id'
+    });
+  
+  if (error) {
+    return { error: error.message };
+  }
+  
+  return { success: true };
 }
 
-async function loadHadithNotes(userId: string, collectionId: string): Promise<{ notes?: string; error?: string }> {
-  return getUserNote(userId, 'hadith', collectionId);
+export async function loadHadithNotes(userId: string, collectionId: string): Promise<{ notes?: string; error?: string }> {
+  const supabase = await createSupabaseServerClient();
+  
+  const { data, error } = await supabase
+    .from('user_notes')
+    .select('content')
+    .eq('user_id', userId)
+    .eq('note_type', 'hadith')
+    .eq('collection_id', collectionId)
+    .single();
+  
+  if (error) {
+    if (error.code === 'PGRST116') {
+      // No rows found
+      return { notes: '' };
+    }
+    return { error: error.message };
+  }
+  
+  return { notes: data?.content || '' };
 }
 
 export async function writeHadithNotesForUser(userId: string, collectionId: string, notes: string) {
