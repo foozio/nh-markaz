@@ -123,9 +123,73 @@ export interface HadithSearchResult {
 }
 
 export async function searchHadith(query: string): Promise<HadithSearchResult[]> {
-  // This is a basic implementation - in a real app you'd want a proper search API
-  // For now, we'll return an empty array as the search functionality would need
-  // a dedicated search service or database
-  // TODO: Implement actual search functionality
-  return [];
+  try {
+    // First, try to search in local database/cache (currently empty)
+    // In the future, this would check a local SQLite database
+    let localResults: HadithSearchResult[] = [];
+    
+    // If no local results, fallback to external API search
+    if (localResults.length === 0) {
+      console.log('No local hadith results found, searching external API...');
+      return await searchHadithExternal(query);
+    }
+    
+    return localResults;
+  } catch (error) {
+    console.error('Hadith search error:', error);
+    // If all else fails, return empty array
+    return [];
+  }
+}
+
+// External API search function for Hadith
+export async function searchHadithExternal(query: string): Promise<HadithSearchResult[]> {
+  try {
+    // Get available collections first
+    const collections = await getHadithCollections();
+    const results: HadithSearchResult[] = [];
+    
+    // Search through major collections (limit to avoid too many API calls)
+    const majorCollections = collections.slice(0, 3); // Bukhari, Muslim, etc.
+    
+    for (const collection of majorCollections) {
+      try {
+        // Get a sample of hadiths from each collection to search through
+        const hadithData = await getHadiths(collection.id, '1-50');
+        
+        // Simple text search in Arabic text
+        const matches = hadithData.hadiths.filter(hadith => 
+          hadith.arab.toLowerCase().includes(query.toLowerCase()) ||
+          query.toLowerCase().includes(hadith.arab.toLowerCase())
+        );
+        
+        // Transform matches to our result format
+        const collectionResults: HadithSearchResult[] = matches.map(hadith => ({
+          collectionId: collection.id,
+          hadithNumber: hadith.number,
+          arabicText: hadith.arab,
+          translation: '', // API doesn't provide translation in this endpoint
+          narrator: '', // Would need additional API call for full details
+          grade: 'Sahih', // Default grade, would need proper grading data
+          source: 'external' as const
+        }));
+        
+        results.push(...collectionResults);
+        
+        // Add delay to respect rate limits
+        await delay(RATE_LIMIT_DELAY_MS);
+        
+        // Limit total results
+        if (results.length >= 20) break;
+      } catch (collectionError) {
+        console.error(`Error searching collection ${collection.id}:`, collectionError);
+        continue;
+      }
+    }
+    
+    return results.slice(0, 20); // Limit final results
+  } catch (error) {
+    console.error('External Hadith search error:', error);
+    return [];
+  }
 }

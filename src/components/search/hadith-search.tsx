@@ -131,10 +131,12 @@ export function HadithSearch({ onHadithSelect, className }: HadithSearchProps) {
     } catch (error) {
       console.error('Search error:', error);
       toast({
-        title: 'Error Pencarian',
-        description: 'Terjadi kesalahan saat mencari, silakan coba lagi',
-        variant: 'destructive'
+        title: "Error Pencarian",
+        description: "Gagal mencari di database lokal dan API eksternal. Periksa koneksi internet Anda.",
+        variant: "destructive",
       });
+      setSearchResults([]);
+      setTotalResults(0);
     } finally {
       setIsLoading(false);
     }

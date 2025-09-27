@@ -51,9 +51,56 @@ export interface QuranSearchResult {
 }
 
 export async function searchQuran(query: string): Promise<QuranSearchResult[]> {
-  // This is a basic implementation - in a real app you'd want a proper search API
-  // For now, we'll return an empty array as the search functionality would need
-  // a dedicated search service or database
-  // TODO: Implement actual search functionality
-  return [];
+  try {
+    // First, try to search in local database/cache (currently empty)
+    // In the future, this would check a local SQLite database
+    let localResults: QuranSearchResult[] = [];
+    
+    // If no local results, fallback to external API search
+    if (localResults.length === 0) {
+      console.log('No local results found, searching external API...');
+      return await searchQuranExternal(query);
+    }
+    
+    return localResults;
+  } catch (error) {
+    console.error('Search error:', error);
+    // If all else fails, return empty array
+    return [];
+  }
+}
+
+// External API search function
+export async function searchQuranExternal(query: string): Promise<QuranSearchResult[]> {
+  try {
+    // Use Al-Quran Cloud API for search
+    const searchUrl = `https://api.alquran.cloud/v1/search/${encodeURIComponent(query)}/all/id.indonesian`;
+    
+    const response = await fetch(searchUrl);
+    if (!response.ok) {
+      throw new Error(`Search API error: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.code !== 200 || !data.data?.matches) {
+      return [];
+    }
+    
+    // Transform API results to our format
+    const results: QuranSearchResult[] = data.data.matches.map((match: any) => ({
+      surahNumber: match.surah.number,
+      verseNumber: match.numberInSurah,
+      arabicText: match.text,
+      translation: match.translation?.text || '',
+      surahName: match.surah.englishName,
+      source: 'external' as const
+    }));
+    
+    // Limit results to prevent overwhelming UI
+    return results.slice(0, 50);
+  } catch (error) {
+    console.error('External Quran search error:', error);
+    return [];
+  }
 }

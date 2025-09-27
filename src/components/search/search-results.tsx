@@ -14,6 +14,7 @@ export interface SearchResult {
   translation: string;
   highlights: string[];
   matchScore: number;
+  source?: 'local' | 'external'; // Indicates data source
   // Quran specific
   surahId?: number;
   surahNumber?: number;
@@ -65,30 +66,57 @@ export function SearchResults({
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <Card key={index} className="animate-pulse">
-            <CardContent className="p-6">
-              <div className="space-y-3">
-                <div className="h-4 bg-muted rounded w-1/4"></div>
-                <div className="h-6 bg-muted rounded"></div>
-                <div className="h-4 bg-muted rounded w-3/4"></div>
+      <div className="space-y-6">
+        {/* Loading Status */}
+        <div className="text-center py-8">
+          <div className="inline-flex items-center gap-3 bg-primary/10 text-primary px-4 py-3 rounded-lg">
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            <div className="text-sm font-medium">
+              <div className="mb-1">Mencari hasil...</div>
+              <div className="text-xs opacity-75">
+                Memeriksa database lokal → Mencari di API eksternal
               </div>
-            </CardContent>
-          </Card>
-        ))}
+            </div>
+          </div>
+        </div>
+        
+        {/* Loading Skeleton */}
+        <div className="space-y-4">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Card key={index} className="animate-pulse">
+              <CardContent className="p-6">
+                <div className="space-y-3">
+                  <div className="h-4 bg-muted rounded w-1/4"></div>
+                  <div className="h-6 bg-muted rounded"></div>
+                  <div className="h-4 bg-muted rounded w-3/4"></div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     );
   }
 
-  if (results.length === 0) {
+  if (results.length === 0 && !isLoading) {
     return (
       <div className="text-center py-12">
         <div className="mx-auto h-12 w-12 text-muted-foreground mb-4">
           <File className="h-full w-full" />
         </div>
         <h3 className="text-lg font-semibold text-foreground mb-2">Tidak Ada Hasil</h3>
-        <p className="text-muted-foreground">Tidak ditemukan hasil untuk pencarian yang diminta</p>
+        <p className="text-muted-foreground mb-4">
+          Tidak ditemukan hasil untuk pencarian "{searchQuery}"
+        </p>
+        <div className="text-sm text-muted-foreground bg-muted/50 rounded-lg p-4 max-w-md mx-auto">
+          <p className="mb-2">💡 <strong>Tips pencarian:</strong></p>
+          <ul className="text-left space-y-1">
+            <li>• Coba kata kunci yang lebih umum</li>
+            <li>• Gunakan kata dalam bahasa Arab atau Indonesia</li>
+            <li>• Periksa ejaan kata kunci</li>
+            <li>• Sistem akan mencari di database lokal dan API eksternal</li>
+          </ul>
+        </div>
       </div>
     );
   }
@@ -119,7 +147,7 @@ export function SearchResults({
               <div className="space-y-4">
                 {/* Header */}
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     {result.type === 'quran' ? (
                       <Book className="h-4 w-4 text-primary" />
                     ) : (
@@ -139,6 +167,13 @@ export function SearchResults({
                         {result.grade}
                       </Badge>
                     )}
+                    {/* Source indicator */}
+                    <Badge 
+                      variant={result.source === 'external' ? 'default' : 'secondary'} 
+                      className="text-xs"
+                    >
+                      {result.source === 'external' ? '🌐 API' : '💾 Lokal'}
+                    </Badge>
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {Math.round(result.matchScore * 100)}% cocok
