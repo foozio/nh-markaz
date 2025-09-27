@@ -7,7 +7,7 @@ import { SearchResults, SearchResult } from './search-results';
 import type { SurahSummary, Surah, Ayah } from '@/lib/quran-data';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen } from 'lucide-react';
+import { Book } from 'lucide-react/icons';
 
 interface QuranSearchProps {
   onVerseSelect?: (surahNumber: number, verseNumber: number) => void;
@@ -92,16 +92,19 @@ export function QuranSearch({ onVerseSelect, className }: QuranSearchProps) {
       const paginatedResults = cachedResults.slice(startIndex, endIndex);
 
       // Convert cached results to SearchResult format
-      const results: SearchResult[] = paginatedResults.map((result, index) => {
-        const surahInfo = surahs.find(s => s.number === result.surahNumber);
+      const results: SearchResult[] = paginatedResults.map((result: any, index: number) => {
+        // Fix: Use correct field names from API response
+        const surahNumber = result.surahId || result.surahNumber;
+        const verseNumber = result.ayahNumber || result.verseNumber;
+        const surahInfo = surahs.find(s => s.number === surahNumber);
         
         // Generate highlights from search query
         const highlights: string[] = [];
         const searchTerm = query.toLowerCase().trim();
         
-        if (result.arabicText.toLowerCase().includes(searchTerm)) {
+        if (result.arabicText && result.arabicText.toLowerCase().includes(searchTerm)) {
           const arabicWords = result.arabicText.split(' ');
-          arabicWords.forEach(word => {
+          arabicWords.forEach((word: string) => {
             if (word.toLowerCase().includes(searchTerm)) {
               highlights.push(word);
             }
@@ -109,16 +112,16 @@ export function QuranSearch({ onVerseSelect, className }: QuranSearchProps) {
         }
         
         return {
-          id: `${result.surahNumber}-${result.verseNumber}`,
+          id: `${surahNumber}-${verseNumber}`,
           type: 'quran' as const,
-          arabicText: result.arabicText,
-          translation: result.translation,
+          arabicText: result.arabicText || '',
+          translation: result.translation || '',
           transliteration: result.transliteration || '',
           highlights,
           matchScore: 0.8, // Default match score
-          surahNumber: result.surahNumber,
-          surahName: surahInfo?.name.transliteration.id || `Surah ${result.surahNumber}`,
-          verseNumber: result.verseNumber,
+          surahNumber: surahNumber,
+          surahName: surahInfo?.name.transliteration.en || `Surah ${surahNumber}`,
+          verseNumber: verseNumber,
           juz: result.juz || 1,
           page: result.page || 1
         };
@@ -161,7 +164,7 @@ export function QuranSearch({ onVerseSelect, className }: QuranSearchProps) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-primary" />
+            <Book className="h-5 w-5 text-primary" />
             Pencarian Al-Quran
           </CardTitle>
         </CardHeader>

@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed Quran dropdown to properly display verse count for all surahs
 - Improved search architecture by separating client-side components from server-side database operations
 - Enhanced SQLite caching mechanism for better performance and reliability
+- Fixed Quran search results displaying "surah undefined" and "ayah undefined" by correcting data binding and mapping
+- Fixed Hadith search results showing "kata beragam" instead of actual Hadith numbers
+- Improved search functionality with proper surah name and verse number display
+- Enhanced data structure and API integration for both Quran and Hadith search
+
+### Changed
+- Replaced all instances of "SAW" with Arabic symbol "ﷺ" for enhanced Islamic authenticity
+- Improved Unicode handling and display consistency across the application
 
 ## [0.2.0] - 2025-01-27
 

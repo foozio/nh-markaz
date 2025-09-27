@@ -1,9 +1,8 @@
 import type { Surah, SurahSummary } from './quran-data';
-import type { HadithCollection, HadithEntry } from './hadith-data';
 import { Database } from 'better-sqlite3';
-import { openDatabase, getCacheStats, getCachedSearchResults, cacheSearchResults, cacheQuranVerse, cacheHadith, getCachedHadith, getDatabase, QuranVerse, HadithData } from './database';
+import { getCacheStats, getCachedSearchResults, cacheSearchResults, cacheQuranVerse, cacheHadith, getCachedHadith, getDatabase, QuranVerse, HadithData } from './database';
 import { getSurahs, getSurah } from './quran-api';
-import { getHadithCollections, getHadithCollection } from './hadith-api';
+import { getHadithCollections } from './hadith-api';
 
 const API_BASE_URL_QURAN = 'https://api.quran.gading.dev';
 const API_BASE_URL_HADITH = 'https://api.hadith.gading.dev';
@@ -12,6 +11,12 @@ const API_BASE_URL_HADITH = 'https://api.hadith.gading.dev';
 const memoryCache = new Map<string, any>();
 
 // Additional type definitions for Hadith API
+export interface HadithEntry {
+  number: number;
+  arab: string;
+  id: string;
+}
+
 export interface HadithCollectionSummary {
   id: string;
   name: string;
