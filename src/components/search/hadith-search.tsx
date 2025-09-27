@@ -7,7 +7,7 @@ import { SearchResults, SearchResult } from './search-results';
 import type { HadithCollectionSummary, HadithEntry, HadithCollectionDetail } from '@/lib/hadith-api';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText } from 'lucide-react';
+import { File } from 'lucide-react/icons';
 
 interface HadithSearchProps {
   onHadithSelect?: (collectionId: string, hadithNumber: number) => void;
@@ -94,7 +94,7 @@ export function HadithSearch({ onHadithSelect, className }: HadithSearchProps) {
       const paginatedResults = cachedResults.slice(startIndex, endIndex);
 
       // Convert cached results to SearchResult format
-      const results: SearchResult[] = paginatedResults.map((result, index) => {
+      const results: SearchResult[] = paginatedResults.map((result: any, index: number) => {
         const collectionInfo = collections.find(c => c.id === result.collectionId);
         
         // Generate highlights from search query
@@ -103,7 +103,7 @@ export function HadithSearch({ onHadithSelect, className }: HadithSearchProps) {
         
         if (result.arabicText.toLowerCase().includes(searchTerm)) {
           const arabicWords = result.arabicText.split(' ');
-          arabicWords.forEach(word => {
+          arabicWords.forEach((word: string) => {
             if (word.toLowerCase().includes(searchTerm)) {
               highlights.push(word);
             }
@@ -113,14 +113,14 @@ export function HadithSearch({ onHadithSelect, className }: HadithSearchProps) {
         return {
           id: `${result.collectionId}-${result.hadithNumber}`,
           type: 'hadith' as const,
-          arabicText: result.arabicText,
-          translation: result.translation,
+          arabicText: result.arabicText || '',
+          translation: result.translation || '',
           highlights,
           matchScore: 0.8, // Default match score
           hadithId: result.hadithNumber,
           collection: collectionInfo?.name || result.collectionId,
-          narrator: 'Beragam', // Default narrator
-          grade: 'Sahih' // Default grade
+          narrator: result.narrator || '', // Use actual narrator from data
+          grade: result.grade || 'Sahih' // Use actual grade from data
         };
       });
 
@@ -163,7 +163,7 @@ export function HadithSearch({ onHadithSelect, className }: HadithSearchProps) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-primary" />
+            <File className="h-5 w-5 text-primary" />
             Pencarian Hadis
           </CardTitle>
         </CardHeader>
@@ -172,7 +172,7 @@ export function HadithSearch({ onHadithSelect, className }: HadithSearchProps) {
             value={searchQuery}
             onChange={setSearchQuery}
             onSearch={handleSearch}
-            placeholder="Cari hadis Nabi Muhammad SAW..."
+            placeholder="Cari hadis Nabi Muhammad ﷺ..."
             isLoading={isLoading}
             suggestions={searchSuggestions}
             onSuggestionSelect={handleSearch}

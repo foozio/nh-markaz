@@ -3,7 +3,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { BookOpen, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Book, File, ChevronLeft, ChevronRight } from 'lucide-react/icons';
 import { cn } from '@/lib/utils';
 
 export interface SearchResult {
@@ -15,8 +15,10 @@ export interface SearchResult {
   matchScore: number;
   // Quran specific
   surahId?: number;
+  surahNumber?: number;
   surahName?: string;
   ayahNumber?: number;
+  verseNumber?: number;
   // Hadith specific
   hadithId?: number;
   collection?: string;
@@ -82,7 +84,7 @@ export function SearchResults({
     return (
       <div className="text-center py-12">
         <div className="mx-auto h-12 w-12 text-muted-foreground mb-4">
-          <FileText className="h-full w-full" />
+          <File className="h-full w-full" />
         </div>
         <h3 className="text-lg font-semibold text-foreground mb-2">Tidak Ada Hasil</h3>
         <p className="text-muted-foreground">Tidak ditemukan hasil untuk pencarian yang diminta</p>
@@ -118,14 +120,14 @@ export function SearchResults({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     {result.type === 'quran' ? (
-                      <BookOpen className="h-4 w-4 text-primary" />
+                      <Book className="h-4 w-4 text-primary" />
                     ) : (
-                      <FileText className="h-4 w-4 text-primary" />
+                      <File className="h-4 w-4 text-primary" />
                     )}
                     <Badge variant="outline" className="font-medium">
                       {result.type === 'quran' 
-                        ? `${result.surahName} - Ayat ${result.ayahNumber}`
-                        : `${result.collection} - ${result.narrator}`
+                        ? `${result.surahName} - Ayat ${result.ayahNumber || result.verseNumber}`
+                        : `${result.collection} - Hadith ${result.hadithId}`
                       }
                     </Badge>
                     {result.grade && (

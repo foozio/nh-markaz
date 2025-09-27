@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { LogOut, BookOpen, Scroll, Search } from 'lucide-react';
+import { LogOut, BookOpen, Scroll, Search } from 'lucide-react/icons';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 

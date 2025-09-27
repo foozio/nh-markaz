@@ -6,7 +6,7 @@ import { HadithSearch } from '@/components/search/hadith-search';
 import { MainHeader } from '@/components/layout/main-header';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Search, BookOpen, FileText } from 'lucide-react';
+import { Search, BookOpen, FileText } from 'lucide-react/icons';
 import { useRouter } from 'next/navigation';
 
 export default function SearchPage() {
@@ -35,7 +35,7 @@ export default function SearchPage() {
           <h1 className="text-3xl font-bold text-foreground">Pencarian Al-Quran dan Hadis</h1>
         </div>
         <p className="text-muted-foreground text-lg">
-          Cari ayat Al-Quran dan hadis Nabi Muhammad SAW
+          Cari ayat Al-Quran dan hadis Nabi Muhammad ﷺ
         </p>
       </div>
 
