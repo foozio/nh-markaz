@@ -29,19 +29,38 @@ async function createSupabaseServerClient() {
 export async function saveNotes(userId: string, notes: string) {
   const supabase = await createSupabaseServerClient();
   
-  const { error } = await supabase
+  // First, try to find existing record
+  const { data: existingNote } = await supabase
     .from('user_notes')
-    .upsert({
-      user_id: userId,
-      note_type: 'quran',
-      content: notes,
-      updated_at: new Date().toISOString()
-    }, {
-      onConflict: 'user_id,note_type'
-    });
+    .select('id')
+    .eq('user_id', userId)
+    .eq('note_type', 'quran')
+    .single();
+
+  let result;
+  if (existingNote) {
+    // Update existing record
+    result = await supabase
+      .from('user_notes')
+      .update({
+        content: notes,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', existingNote.id);
+  } else {
+    // Insert new record
+    result = await supabase
+      .from('user_notes')
+      .insert({
+        user_id: userId,
+        note_type: 'quran',
+        content: notes,
+        updated_at: new Date().toISOString()
+      });
+  }
   
-  if (error) {
-    return { error: error.message };
+  if (result.error) {
+    return { error: result.error.message };
   }
   
   return { success: true };
@@ -79,20 +98,40 @@ export async function readNotesForUser(userId: string) {
 export async function saveHadithNotes(userId: string, collectionId: string, notes: string) {
   const supabase = await createSupabaseServerClient();
   
-  const { error } = await supabase
+  // First, try to find existing record
+  const { data: existingNote } = await supabase
     .from('user_notes')
-    .upsert({
-      user_id: userId,
-      note_type: 'hadith',
-      content: notes,
-      collection_id: collectionId,
-      updated_at: new Date().toISOString()
-    }, {
-      onConflict: 'user_id,note_type,collection_id'
-    });
+    .select('id')
+    .eq('user_id', userId)
+    .eq('note_type', 'hadith')
+    .eq('collection_id', collectionId)
+    .single();
+
+  let result;
+  if (existingNote) {
+    // Update existing record
+    result = await supabase
+      .from('user_notes')
+      .update({
+        content: notes,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', existingNote.id);
+  } else {
+    // Insert new record
+    result = await supabase
+      .from('user_notes')
+      .insert({
+        user_id: userId,
+        note_type: 'hadith',
+        content: notes,
+        collection_id: collectionId,
+        updated_at: new Date().toISOString()
+      });
+  }
   
-  if (error) {
-    return { error: error.message };
+  if (result.error) {
+    return { error: result.error.message };
   }
   
   return { success: true };

@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   outputFileTracingRoot: path.resolve(__dirname),
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['localhost:3000']
+    }
+  },
   images: {
     remotePatterns: [
       {

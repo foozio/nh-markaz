@@ -3,7 +3,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import type { Surah, SurahSummary, Ayah, Bookmark } from '@/lib/quran-data';
-import { getSurah, getSurahs } from '@/lib/quran-api';
+// Removed server action imports - using API endpoints instead
 import { SurahView } from './surah-view';
 import { RightSidebar } from './right-sidebar';
 import { MainHeader } from '@/components/layout/main-header';
@@ -12,7 +12,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { loadUserNotes, saveUserNotes } from '@/app/actions';
 
-export function QuranBrowser() {
+export function QuranBrowser({ initialSurahNumber }: { initialSurahNumber?: number } = {}) {
   const { user } = useAuth();
   const { toast } = useToast();
   const [surahs, setSurahs] = useState<SurahSummary[]>([]);
@@ -33,11 +33,20 @@ export function QuranBrowser() {
       setIsLoadingNotes(true);
 
       try {
-        // Fetch surahs
-        const surahList = await getSurahs();
+        // Fetch surahs using API endpoint
+        const response = await fetch('/api/surahs');
+        if (!response.ok) {
+          throw new Error('Failed to load surahs');
+        }
+        const data = await response.json();
+        const surahList = data.surahs || [];
         setSurahs(surahList);
         if (surahList.length > 0) {
-          await handleSelectSurah(surahList[0]);
+          // Use initialSurahNumber if provided, otherwise default to first surah
+          const targetSurah = initialSurahNumber 
+            ? surahList.find((s: SurahSummary) => s.number === initialSurahNumber) || surahList[0]
+            : surahList[0];
+          await handleSelectSurah(targetSurah);
         }
       } catch (error) {
         console.error('Gagal memuat surah:', error);
@@ -71,7 +80,13 @@ export function QuranBrowser() {
     setSelectedSurahSummary(surahSummary);
     setSelectedSurah(null);
     try {
-      const surahDetail = await getSurah(surahSummary.number);
+      // Use API endpoint for fetching surah details
+      const response = await fetch(`/api/surah/${surahSummary.number}`);
+      if (!response.ok) {
+        throw new Error(`Failed to load surah ${surahSummary.number}`);
+      }
+      const data = await response.json();
+      const surahDetail = data.surah;
       setSelectedSurah(surahDetail);
       
       if (verseNumber) {
@@ -83,6 +98,7 @@ export function QuranBrowser() {
 
     } catch (error) {
       console.error(`Gagal memuat surah ${surahSummary.number}:`, error);
+      toast({ variant: 'destructive', title: 'Error', description: `Gagal memuat surah ${surahSummary.number}.` });
     } finally {
       setIsLoadingSurah(false);
     }
