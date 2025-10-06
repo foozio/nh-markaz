@@ -54,5 +54,14 @@ All database files are automatically created and ignored by Git for security.
 ## Contributing
 We welcome contributions! Please read `CONTRIBUTING.md` and follow the code of conduct before opening an issue or pull request.
 
+## Documentation
+
+- **[Architecture Overview](docs/ARCHITECTURE.md)** - System architecture and design decisions
+- **[API Reference](docs/API_REFERENCE.md)** - Complete API documentation
+- **[Components Guide](docs/COMPONENTS.md)** - React components documentation
+- **[Setup Guide](docs/SETUP.md)** - Installation and configuration
+- **[Database Documentation](docs/DATABASE.md)** - Database schema and migrations
+- **[AI Integration](docs/AI_INTEGRATION.md)** - AI features and Genkit setup
+
 ## License
 This project is licensed under the MIT License. See `LICENSE` for details.
