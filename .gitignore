@@ -51,3 +51,6 @@ data/
 
 # kilocode documentation
 .kilocode/
+
+# trae
+.trae/
