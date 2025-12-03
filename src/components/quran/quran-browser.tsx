@@ -9,7 +9,7 @@ import { RightSidebar } from './right-sidebar';
 import { QuranHeader } from '@/components/layout/quran-header';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
-import { loadUserNotes, saveUserNotes } from '@/app/actions';
+import { loadUserNotes, saveUserNotes, loadQuranBookmarks, toggleQuranBookmarkForUser } from '@/app/actions';
 
 export function QuranBrowser() {
   const { user } = useAuth();
@@ -30,6 +30,18 @@ export function QuranBrowser() {
       if (!user) return;
       setIsLoadingSurahs(true);
       setIsLoadingNotes(true);
+      const loadBookmarksPromise = loadQuranBookmarks()
+        .then(result => {
+          if ('error' in result) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Gagal memuat penanda.' });
+            return;
+          }
+          setBookmarks(result.bookmarks);
+        })
+        .catch(error => {
+          console.error('Gagal memuat penanda:', error);
+          toast({ variant: 'destructive', title: 'Error', description: 'Gagal memuat penanda.' });
+        });
 
       try {
         // Fetch surahs
@@ -59,6 +71,7 @@ export function QuranBrowser() {
       } finally {
         setIsLoadingNotes(false);
       }
+      await loadBookmarksPromise;
     }
     fetchInitialData();
   }, [user]);
@@ -120,15 +133,23 @@ export function QuranBrowser() {
     return bookmarks.some(b => b.surahNumber === surahNumber && b.verseNumber === verseNumber);
   }
 
-  const handleToggleBookmark = (surahNumber: number, verseNumber: number, surahName: string, verseText: string) => {
+  const handleToggleBookmark = async (surahNumber: number, verseNumber: number, surahName: string, verseText: string) => {
     setBookmarks(prev => {
-        const existing = isVerseBookmarked(surahNumber, verseNumber);
-        if (existing) {
-            return prev.filter(b => !(b.surahNumber === surahNumber && b.verseNumber === verseNumber));
-        } else {
-            return [...prev, { surahNumber, verseNumber, surahName, text: verseText }];
-        }
+      const exists = prev.some(b => b.surahNumber === surahNumber && b.verseNumber === verseNumber);
+      if (exists) {
+        return prev.filter(b => !(b.surahNumber === surahNumber && b.verseNumber === verseNumber));
+      }
+      return [...prev, { surahNumber, verseNumber, surahName, text: verseText }];
     });
+    try {
+      const result = await toggleQuranBookmarkForUser(surahNumber, verseNumber, surahName, verseText);
+      if (result?.error) {
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      console.error('Gagal menyimpan penanda:', error);
+      toast({ variant: 'destructive', title: 'Gagal Menyimpan Penanda', description: 'Coba lagi nanti.' });
+    }
   }
 
   const handleSaveNotes = async () => {

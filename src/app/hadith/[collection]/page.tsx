@@ -26,7 +26,10 @@ export default async function HadithCollectionPage({ params }: HadithCollectionP
         <div>
           <p className="font-semibold text-primary uppercase tracking-wide">Hadith</p>
           <h1 className="font-headline text-4xl">{detail.name}</h1>
-          <p className="text-muted-foreground">Menampilkan seluruh {detail.available.toLocaleString('id-ID')} hadith dalam koleksi ini, dibagi per 10 riwayat.</p>
+          <p className="text-muted-foreground">
+            Menampilkan {detail.requested.toLocaleString('id-ID')} hadith pertama dari total {detail.available.toLocaleString('id-ID')} koleksi ini, dibagi per 10 riwayat.
+            {detail.truncated && ' Untuk kinerja yang lebih baik, kami memuat sebagian koleksi. Navigasi lanjutan akan segera hadir.'}
+          </p>
         </div>
       </header>
 

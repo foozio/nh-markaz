@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
-import { loadUserHadithNotes, saveUserHadithNotes } from '@/app/actions';
+import { loadUserHadithNotes, saveUserHadithNotes, loadHadithBookmarks, toggleHadithBookmarkForUser } from '@/app/actions';
 import type { HadithEntry } from '@/lib/hadith-api';
 import { HadithItem } from './hadith-item';
 import { HadithSidebar } from './hadith-sidebar';
@@ -23,32 +23,6 @@ export interface HadithBookmark {
   excerpt: string;
 }
 
-const BOOKMARK_STORAGE_KEY = 'hadithBookmarks';
-
-const isValidBookmark = (bookmark: unknown): bookmark is HadithBookmark => {
-  if (!bookmark || typeof bookmark !== 'object') return false;
-
-  const candidate = bookmark as Partial<HadithBookmark>;
-  return (
-    typeof candidate.collectionId === 'string' &&
-    typeof candidate.collectionName === 'string' &&
-    typeof candidate.number === 'number' &&
-    typeof candidate.excerpt === 'string'
-  );
-};
-
-const normaliseBookmarks = (items: unknown[]): HadithBookmark[] => {
-  const unique = new Map<string, HadithBookmark>();
-
-  items.forEach(item => {
-    if (!isValidBookmark(item)) return;
-    const key = `${item.collectionId}-${item.number}`;
-    unique.set(key, item);
-  });
-
-  return Array.from(unique.values());
-};
-
 export function HadithReader({ collectionId, collectionName, hadiths }: HadithReaderProps) {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -56,7 +30,6 @@ export function HadithReader({ collectionId, collectionName, hadiths }: HadithRe
   const [isLoadingNotes, setIsLoadingNotes] = useState(true);
   const [isSavingNotes, setIsSavingNotes] = useState(false);
   const [bookmarks, setBookmarks] = useState<HadithBookmark[]>([]);
-  const hasLoadedBookmarks = useRef(false);
   const hadithRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const listContainerRef = useRef<HTMLDivElement>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -126,36 +99,26 @@ export function HadithReader({ collectionId, collectionName, hadiths }: HadithRe
   }, [currentHadiths, pendingScrollNumber]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    try {
-      const raw = window.localStorage.getItem(BOOKMARK_STORAGE_KEY);
-      if (!raw) return;
-
-      const parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed)) return;
-
-      setBookmarks(prev => {
-        if (prev.length > 0) return prev;
-        return normaliseBookmarks(parsed);
-      });
-    } catch (error) {
-      console.error('Gagal memuat penanda hadith dari localStorage:', error);
-    } finally {
-      hasLoadedBookmarks.current = true;
+    async function fetchBookmarks() {
+      if (!user) {
+        setBookmarks([]);
+        return;
+      }
+      try {
+        const result = await loadHadithBookmarks();
+        if ('error' in result) {
+          toast({ variant: 'destructive', title: 'Error', description: 'Gagal memuat penanda hadith.' });
+          return;
+        }
+        setBookmarks(result.bookmarks);
+      } catch (error) {
+        console.error('Gagal memuat penanda hadith:', error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Gagal memuat penanda hadith.' });
+      }
     }
-  }, []);
 
-  useEffect(() => {
-    if (!hasLoadedBookmarks.current || typeof window === 'undefined') return;
-
-    try {
-      const serialised = JSON.stringify(normaliseBookmarks(bookmarks));
-      window.localStorage.setItem(BOOKMARK_STORAGE_KEY, serialised);
-    } catch (error) {
-      console.error('Gagal menyimpan penanda hadith ke localStorage:', error);
-    }
-  }, [bookmarks]);
+    fetchBookmarks();
+  }, [user, toast]);
 
   const addHadithSnippet = (hadith: HadithEntry) => {
     const header = `<h2>${collectionName} - Hadith #${hadith.number}</h2>`;
@@ -172,24 +135,25 @@ export function HadithReader({ collectionId, collectionName, hadiths }: HadithRe
     setNotes(prev => (prev ? `${prev}${snippet}` : snippet));
   };
 
-  const toggleBookmark = (hadith: HadithEntry) => {
+  const toggleBookmark = async (hadith: HadithEntry) => {
+    const excerpt = hadith.id.length > 120 ? `${hadith.id.slice(0, 117)}...` : hadith.id;
     setBookmarks(prev => {
       const exists = prev.some(item => item.collectionId === collectionId && item.number === hadith.number);
       if (exists) {
-        return normaliseBookmarks(
-          prev.filter(item => !(item.collectionId === collectionId && item.number === hadith.number)),
-        );
+        return prev.filter(item => !(item.collectionId === collectionId && item.number === hadith.number));
       }
-      const excerpt = hadith.id.length > 120 ? `${hadith.id.slice(0, 117)}...` : hadith.id;
-      const nextBookmark: HadithBookmark = {
-        collectionId,
-        collectionName,
-        number: hadith.number,
-        excerpt,
-      };
-
-      return normaliseBookmarks([...prev, nextBookmark]);
+      const nextBookmark: HadithBookmark = { collectionId, collectionName, number: hadith.number, excerpt };
+      return [...prev, nextBookmark];
     });
+
+    try {
+      if (!user) return;
+      const result = await toggleHadithBookmarkForUser(collectionId, collectionName, hadith.number, excerpt);
+      if (result?.error) throw new Error(result.error);
+    } catch (error) {
+      console.error('Gagal menyimpan penanda hadith:', error);
+      toast({ variant: 'destructive', title: 'Gagal Menyimpan Penanda', description: 'Coba lagi nanti.' });
+    }
   };
 
   const navigateToBookmark = (bookmark: HadithBookmark) => {

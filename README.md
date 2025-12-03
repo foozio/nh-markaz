@@ -32,8 +32,11 @@ The following values are required:
 | `GOOGLE_CLIENT_ID` | Google OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
 
-## Database
-The project uses SQLite for storing personal notes. The database file is automatically created at `data/notes.db` and is ignored by Git.
+## Data storage
+Notes and bookmarks are persisted in `data/markaz.db` (SQLite via `better-sqlite3`). The DB file is created automatically; ensure the `data` directory is writable in your environment.
+
+## Observability
+Structured logs are emitted (JSON) for Quran/Hadith fetches and AI events. Forward stdout/stderr to your logging stack to monitor external API issues and AI failures.
 
 ## Scripts
 - `npm run dev` – start the Next.js dev server on port 9002
