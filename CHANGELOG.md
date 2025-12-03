@@ -8,14 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Completed the hadith reader experience by fetching full collections from api.hadith.gading.dev, paginating every ten entries, and enabling bookmarks plus notes.
-- Introduced shared note management across Quran and Hadith, including quick insertion of text and AI summaries alongside dedicated sidebar editors.
-- Added verse-level bookmarking and audio playback controls inside the Quran reader for faster navigation and listening.
+- SQLite-backed persistence for user notes and Quran/Hadith bookmarks with per-user server actions.
+- Structured JSON logging for Quran/Hadith fetches, AI events, and auth edge cases to aid observability.
+- CI workflow (lint, typecheck, Vitest) plus smoke tests for Quran and Hadith data fetchers.
+- NextAuth route and middleware to protect Quran/Hadith routes, and guarded AI features when `GEMINI_API_KEY` is missing.
+- New documentation set (PRD, ERD, security evaluation, enhancement report, tasks) reflecting current system state.
 
 ### Changed
-- Replaced the SQLite-backed note persistence with a temporary in-memory store while database compilation issues are resolved.
-- Updated the global typography stack to use Noto Sans for improved readability across layouts.
-- Polished navigation headers and sidebars to surface account controls and bookmark tabs.
+- Quran/Hadith API clients now use caching with retry/backoff; Hadith full-collection fetches are capped with truncation notice to improve performance.
+- Notes content is sanitized on save/load to reduce XSS risk.
+- README updated to reflect the SQLite storage location and runtime expectations.
+
+### Security
+- Added sanitization of rich-text notes before persistence and after load.
+- Guarded AI summary calls when credentials are absent to avoid leaking errors to users.
 
 ## [0.1.0] - 2025-09-24
 
